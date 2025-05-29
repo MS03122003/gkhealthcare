@@ -1,0 +1,405 @@
+<!-- 5. Categories Section -->
+                        <div class="section-box mb-4">
+                            <h4 class="section-title mb-3">3. Categories</h4>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="category_id" class="form-label">Category ID</label>
+                                    <select class="form-select" id="category_id" name="category_id">
+                                        <option value="">Select Category ID</option>
+                                        {% for category in categories %}
+                                        <option value="{{ category.id }}">{{ category.id }} - {{ category.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label for="category_name" class="form-label">Category Name</label>
+                                    <select class="form-select" id="category_name" name="category_name">
+                                        <option value="">Select Category Name</option>
+                                        {% for category in categories %}
+                                        <option value="{{ category.name }}">{{ category.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-12 mb-3">
+                                    <div class="d-flex flex-wrap gap-2">
+                                        <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#addCategoryModal">
+                                            <i class="fas fa-plus me-2"></i>Add
+                                        </button>
+                                        <button type="button" class="btn btn-outline-secondary" id="updateCategoryBtn">
+                                            <i class="fas fa-edit me-2"></i>Update
+                                        </button>
+                                        <button type="button" class="btn btn-outline-danger" id="deleteCategoryBtn">
+                                            <i class="fas fa-trash me-2"></i>Delete
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <hr class="my-4">
+                        
+                        <!-- 6. Product Information -->
+                        <div class="section-box mb-4">
+                            <h4 class="section-title mb-3">4. Product Information</h4>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="product_id" class="form-label">Product ID</label>
+                                    <select class="form-select" id="product_id" name="product_id">
+                                        <option value="">Select Product ID</option>
+                                        {% for product in products %}
+                                        <option value="{{ product.id }}">{{ product.id }} - {{ product.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label for="product_name" class="form-label">Product Name</label>
+                                    <select class="form-select" id="product_name" name="product_name">
+                                        <option value="">Select Product Name</option>
+                                        {% for product in products %}
+                                        <option value="{{ product.name }}">{{ product.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-12 mb-3">
+                                    <label class="form-label">Parts</label>
+                                    
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <div class="d-flex flex-wrap gap-2 mb-3">
+                                                <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#addPartModal">
+                                                    <i class="fas fa-plus me-2"></i>Add
+                                                </button>
+                                                <button type="button" class="btn btn-outline-secondary" id="updatePartBtn">
+                                                    <i class="fas fa-edit me-2"></i>Update
+                                                </button>
+                                                <button type="button" class="btn btn-outline-danger" id="deletePartBtn">
+                                                    <i class="fas fa-trash me-2"></i>Delete
+                                                </button>
+                                            </div>
+                                            
+                                            <div class="table-responsive">
+                                                <table class="table table-bordered" id="partsTable">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Select</th>
+                                                            <th>Part Number</th>
+                                                            <th>Description</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td><input type="checkbox" name="selected_parts" value="P0C0X4PR05G"></td>
+                                                            <td>P0C0X4PR05G</td>
+                                                            <td>5G Pro Component</td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Form buttons -->
+                        <div class="d-flex justify-content-end mt-4">
+                            <button type="reset" class="btn btn-outline-secondary me-2">Reset</button>
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Category Modal -->
+<div class="modal fade" id="addCategoryModal" tabindex="-1" aria-labelledby="addCategoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addCategoryModalLabel">Add New Category</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addCategoryForm">
+                    <div class="mb-3">
+                        <label for="new_category_name" class="form-label">Category Name*</label>
+                        <input type="text" class="form-control" id="new_category_name" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="saveCategoryBtn">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Part Modal -->
+<div class="modal fade" id="addPartModal" tabindex="-1" aria-labelledby="addPartModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addPartModalLabel">Add New Part</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addPartForm">
+                    <div class="mb-3">
+                        <label for="new_part_number" class="form-label">Part Number*</label>
+                        <input type="text" class="form-control" id="new_part_number" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="new_part_description" class="form-label">Description</label>
+                        <input type="text" class="form-control" id="new_part_description">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="savePartBtn">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .section-box {
+        background-color: #f8f9fa;
+        padding: 1.5rem;
+        border-radius: 0.5rem;
+        border: 1px solid #dee2e6;
+    }
+    
+    .section-title {
+        color: #495057;
+        font-weight: 600;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid #dee2e6;
+    }
+    
+    .form-check {
+        padding: 0.5rem 1rem;
+        background-color: white;
+        margin-bottom: 0.25rem;
+        border-radius: 0.25rem;
+        border: 1px solid #dee2e6;
+    }
+    
+    #partsTable th {
+        background-color: #f8f9fa;
+    }
+    
+    .btn-outline-primary, .btn-outline-secondary, .btn-outline-danger {
+        min-width: 100px;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Link category dropdowns
+        const categoryIdSelect = document.getElementById('category_id');
+        const categoryNameSelect = document.getElementById('category_name');
+        
+        categoryIdSelect.addEventListener('change', function() {
+            if (this.value) {
+                const selectedOption = this.options[this.selectedIndex];
+                const categoryName = selectedOption.text.split(' - ')[1];
+                
+                // Find matching name in category name dropdown
+                for (let i = 0; i < categoryNameSelect.options.length; i++) {
+                    if (categoryNameSelect.options[i].value === categoryName) {
+                        categoryNameSelect.selectedIndex = i;
+                        break;
+                    }
+                }
+            } else {
+                categoryNameSelect.selectedIndex = 0;
+            }
+        });
+        
+        categoryNameSelect.addEventListener('change', function() {
+            if (this.value) {
+                // Find matching ID in category ID dropdown
+                for (let i = 0; i < categoryIdSelect.options.length; i++) {
+                    if (categoryIdSelect.options[i].text.includes(this.value)) {
+                        categoryIdSelect.selectedIndex = i;
+                        break;
+                    }
+                }
+            } else {
+                categoryIdSelect.selectedIndex = 0;
+            }
+        });
+        
+        // Link product dropdowns
+        const productIdSelect = document.getElementById('product_id');
+        const productNameSelect = document.getElementById('product_name');
+        
+        productIdSelect.addEventListener('change', function() {
+            if (this.value) {
+                const selectedOption = this.options[this.selectedIndex];
+                const productName = selectedOption.text.split(' - ')[1];
+                
+                // Find matching name in product name dropdown
+                for (let i = 0; i < productNameSelect.options.length; i++) {
+                    if (productNameSelect.options[i].value === productName) {
+                        productNameSelect.selectedIndex = i;
+                        break;
+                    }
+                }
+            } else {
+                productNameSelect.selectedIndex = 0;
+            }
+        });
+        
+        productNameSelect.addEventListener('change', function() {
+            if (this.value) {
+                // Find matching ID in product ID dropdown
+                for (let i = 0; i < productIdSelect.options.length; i++) {
+                    if (productIdSelect.options[i].text.includes(this.value)) {
+                        productIdSelect.selectedIndex = i;
+                        break;
+                    }
+                }
+            } else {
+                productIdSelect.selectedIndex = 0;
+            }
+        });
+        
+        // Categories functionality
+        const saveCategoryBtn = document.getElementById('saveCategoryBtn');
+        const updateCategoryBtn = document.getElementById('updateCategoryBtn');
+        const deleteCategoryBtn = document.getElementById('deleteCategoryBtn');
+        
+        // Parts functionality
+        const savePartBtn = document.getElementById('savePartBtn');
+        const updatePartBtn = document.getElementById('updatePartBtn');
+        const deletePartBtn = document.getElementById('deletePartBtn');
+        const partsTable = document.getElementById('partsTable').getElementsByTagName('tbody')[0];
+        
+        // Save new category
+        saveCategoryBtn.addEventListener('click', function() {
+            const categoryName = document.getElementById('new_category_name').value.trim();
+            
+            if (categoryName) {
+                // In a real app, you would make an AJAX call to save the category
+                // and then update the dropdowns with the new category
+                alert(`Category "${categoryName}" would be saved to database (AJAX call would go here)`);
+                
+                // Clear and close modal
+                document.getElementById('new_category_name').value = '';
+                bootstrap.Modal.getInstance(document.getElementById('addCategoryModal')).hide();
+            }
+        });
+        
+        // Save new part
+        savePartBtn.addEventListener('click', function() {
+            const partNumber = document.getElementById('new_part_number').value.trim();
+            const partDescription = document.getElementById('new_part_description').value.trim();
+            
+            if (partNumber) {
+                // Add new row to parts table
+                const newRow = partsTable.insertRow();
+                
+                const cell1 = newRow.insertCell(0);
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.name = 'selected_parts';
+                checkbox.value = partNumber;
+                cell1.appendChild(checkbox);
+                
+                const cell2 = newRow.insertCell(1);
+                cell2.textContent = partNumber;
+                
+                const cell3 = newRow.insertCell(2);
+                cell3.textContent = partDescription || '-';
+                
+                // Clear and close modal
+                document.getElementById('new_part_number').value = '';
+                document.getElementById('new_part_description').value = '';
+                bootstrap.Modal.getInstance(document.getElementById('addPartModal')).hide();
+            }
+        });
+        
+        // Update category
+        updateCategoryBtn.addEventListener('click', function() {
+            const selectedCategoryId = categoryIdSelect.value;
+            if (selectedCategoryId) {
+                alert(`Would open edit modal for category ID ${selectedCategoryId} (implementation would go here)`);
+            } else {
+                alert('Please select a category to update');
+            }
+        });
+        
+        // Delete category
+        deleteCategoryBtn.addEventListener('click', function() {
+            const selectedCategoryId = categoryIdSelect.value;
+            if (selectedCategoryId) {
+                if (confirm('Are you sure you want to delete the selected category?')) {
+                    alert(`Category ID ${selectedCategoryId} would be deleted (AJAX call would go here)`);
+                    // In real app, would remove from dropdowns after successful deletion
+                }
+            } else {
+                alert('Please select a category to delete');
+            }
+        });
+        
+        // Update part
+        updatePartBtn.addEventListener('click', function() {
+            const selected = document.querySelectorAll('#partsTable input[name="selected_parts"]:checked');
+            if (selected.length === 1) {
+                const row = selected[0].closest('tr');
+                const partNumber = row.cells[1].textContent;
+                const partDescription = row.cells[2].textContent;
+                
+                alert(`Would open edit modal for part ${partNumber} (implementation would go here)`);
+            } else {
+                alert('Please select exactly one part to update');
+            }
+        });
+        
+        // Delete part
+        deletePartBtn.addEventListener('click', function() {
+            const selected = document.querySelectorAll('#partsTable input[name="selected_parts"]:checked');
+            if (selected.length > 0) {
+                if (confirm(`Are you sure you want to delete ${selected.length} selected part(s)?`)) {
+                    selected.forEach(checkbox => {
+                        checkbox.closest('tr').remove();
+                    });
+                }
+            } else {
+                alert('Please select at least one part to delete');
+            }
+        });
+        
+        // Form validation
+        (function () {
+            'use strict'
+            var forms = document.querySelectorAll('.needs-validation')
+            Array.prototype.slice.call(forms)
+                .forEach(function (form) {
+                    form.addEventListener('submit', function (event) {
+                        if (!form.checkValidity()) {
+                            event.preventDefault()
+                            event.stopPropagation()
+                        }
+                        form.classList.add('was-validated')
+                    }, false)
+                })
+        })()
+    });
+</script>
+{% endblock %}

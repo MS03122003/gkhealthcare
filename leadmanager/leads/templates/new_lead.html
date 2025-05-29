@@ -1,0 +1,654 @@
+{% extends "base.html" %}
+
+{% block title %}Hospital/Clinic Lead Form{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h3 class="mb-0">Hospital/Clinic Lead Form</h3>
+        </div>
+        <div class="card-body">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                <!-- 1. Hospital Information -->
+                <div class="mb-4">
+                    <h5 class="border-bottom pb-2">1. Hospital/Clinic Information</h5>
+                    <div class="mb-3">
+                        <label class="form-label">Hospital/Clinic Name*</label>
+                        <input type="text" class="form-control" name="hospital_name" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Type of Hospital Unit*</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="hospital_type" id="direct_hospital" value="Direct Hospital" required>
+                            <label class="form-check-label" for="direct_hospital">Direct Hospital</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="hospital_type" id="distributed" value="Distributed">
+                            <label class="form-check-label" for="distributed">Distributed</label>
+                        </div>
+                        <div class="form-check">
+        <input class="form-check-input" type="radio" name="hospital_type" id="other_type" value="Other">
+        <label class="form-check-label" for="other_type">Other</label>
+    </div>
+    <div id="hospital_type_other_container" class="mt-2" style="display:none;">
+        <input type="text" class="form-control" name="hospital_type_other" placeholder="Please specify">
+    </div>
+                    </div>
+                </div>
+
+                <!-- 2. Contact Information -->
+                <div class="mb-4">
+                    <h5 class="border-bottom pb-2">2. Contact Person Information</h5>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">First Name*</label>
+                            <input type="text" class="form-control" name="first_name" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Last Name*</label>
+                            <input type="text" class="form-control" name="last_name" required>
+                        </div>
+                    </div>
+                     <div class="col-md-4 mb-3">
+            <label class="form-label">Designation</label>
+            <input type="text" class="form-control" name="designation" placeholder="e.g. Manager, Director">
+        </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Phone Number*</label>
+                            <input type="tel" class="form-control" name="phone" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-control" name="email">
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Address</label>
+                        <input type="text" class="form-control" name="address">
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">City</label>
+                            <input type="text" class="form-control" name="city">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">State</label>
+                            <input type="text" class="form-control" name="state">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Country</label>
+                            <input type="text" class="form-control" name="country" value="India">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. Decision Maker Information -->
+                <div class="mb-4">
+                    <h5 class="border-bottom pb-2">3. Decision Maker Information</h5>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" name="decision_maker" id="dialysis_tech" value="Dialysis Technician">
+                        <label class="form-check-label" for="dialysis_tech">Dialysis Technician</label>
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" name="decision_maker" id="nephrologist" value="Nephrologist">
+                        <label class="form-check-label" for="nephrologist">Nephrologist</label>
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" name="decision_maker" id="purchase_dept" value="Purchase Department">
+                        <label class="form-check-label" for="purchase_dept">Purchase Department</label>
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" name="decision_maker" id="account_dept" value="Account Department">
+                        <label class="form-check-label" for="account_dept">Account Department</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="decision_maker" id="biomedical" value="Biomedical Department">
+                        <label class="form-check-label" for="biomedical">Biomedical Department</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="decision_maker" id="store" value="store">
+                        <label class="form-check-label" for="biomedical">Store</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="decision_maker" id="owner" value="owner">
+                        <label class="form-check-label" for="biomedical">Owner</label>
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" name="decision_maker" id="other_decision" value="Other">
+                        <label class="form-check-label" for="other_response">Other</label>
+                    </div>
+                    <div id="decision_maker_other_containers" class="mt-2" style="display:none;">
+                        <input type="text" class="form-control" name="decision_maker_other" placeholder="Please specify">
+                    </div>
+                </div>
+
+                <!-- 4. Telecalling Response -->
+                <div class="mb-4">
+                    <h5 class="border-bottom pb-2">4. Telecalling Response</h5>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" name="telecalling_response" id="did_not_receive" value="Did not receive">
+                        <label class="form-check-label" for="did_not_receive">Did not receive</label>
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" name="telecalling_response" id="call_me_later" value="Call me later">
+                        <label class="form-check-label" for="call_me_later">Call me later</label>
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" name="telecalling_response" id="not_interested" value="Not interested">
+                        <label class="form-check-label" for="not_interested">Not interested</label>
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" name="telecalling_response" id="interested" value="Interested in product">
+                        <label class="form-check-label" for="interested">Interested in product</label>
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" name="telecalling_response" id="no_business" value="No more in business">
+                        <label class="form-check-label" for="no_business">No more in business</label>
+                    </div>
+                    <div class="form-check mb-2">
+        <input class="form-check-input" type="checkbox" name="telecalling_response" id="other_response" value="Other">
+        <label class="form-check-label" for="other_response">Other</label>
+    </div>
+    <div id="telecalling_response_other_container" class="mt-2" style="display:none;">
+        <input type="text" class="form-control" name="telecalling_response_other" placeholder="Please specify">
+    </div> 
+    <!-- Categories Section -->
+                <div class="mb-4">
+                    <h5 class="border-bottom pb-2">5.Categories</h5>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Category ID</label>
+                            <select class="form-select" id="category_id" name="category_id">
+                                <option value="">Select Category ID</option>
+                                {% for id, names in categories.items %}
+                                    <option value="{{ id }}">{{ id }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Category Name</label>
+                            <select class="form-select" id="category_name" name="category_name">
+                                <option value="">Select Category Name</option>
+                                {% for id, names in categories.items %}
+                                    {% for category in names %}
+                                        <option class="name-option" data-category-id="{{ category.id }}" 
+                                                value="{{ category.name }}" 
+                                                {% if not forloop.first %}style="display:none;"{% endif %}>
+                                            {{ category.name }}
+                                        </option>
+                                    {% endfor %}
+                                {% endfor %}
+                            </select>
+                        </div>
+                    
+                    
+                    <!--<div class="d-flex flex-wrap gap-2 mb-3">
+                        <a href="{% url 'add_category' %}" class="btn btn-outline-primary">
+                            <i class="fas fa-plus me-2"></i>Add Category
+                        </a>
+                    </div>-->
+
+                <!-- 6. Product Information -->
+                <div class="mb-4">
+                    <h5 class="border-bottom pb-2">Product Information</h5>
+                    
+                    <!-- Product Container (Will hold multiple product dropdowns) -->
+                    <div id="productContainer">
+                        <div class="product-row mb-3">
+                            <div class="row">
+                                 <div class="col-md-6">
+                                    <select class="form-select product-id" name="products[0][id]" required>
+                                        <option value="">Select Product ID</option>
+                                        {% for product in products %}
+                                        <option value="{{ product.id }}">{{ product.id }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            <div class="col-md-6">
+                                <select class="form-select product-name" name="products[0][name]" required>
+                                    <option value="">Select Product Name</option>
+                                    {% for product in products %}
+                                    <option value="{{ product.name }}" data-id="{{ product.id }}">{{ product.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        <!-- Add Product Button -->
+                                <div>
+                                    <button type="button" id="addProductBtn" class="btn btn-outline-primary mt-2">
+                                        <i class="fas fa-plus me-2"></i> Add Another Product
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 7. Parts Information -->
+                <div class="mb-4">
+                    <h5 class="border-bottom pb-2">7. Parts Information</h5>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="part_id" class="form-label">Part ID</label>
+                            <select class="form-select" id="part_id" name="part_id">
+                                <option value="">Select Part ID</option>
+                                {% for part in parts %}
+                                <option value="{{ part.id }}">{{ part.id }} - {{ part.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="part_name" class="form-label">Part Name</label>
+                            <select class="form-select" id="part_name" name="part_name">
+                                <option value="">Select Part Name</option>
+                                {% for part in parts %}
+                                <option value="{{ part.name }}">{{ part.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex flex-wrap gap-2 mb-3">
+                        <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#addPartModal">
+                            <i class="fas fa-plus me-2"></i>Add
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary" id="updatePartBtn">
+                            <i class="fas fa-edit me-2"></i>Update
+                        </button>
+                        <button type="button" class="btn btn-outline-danger" id="deletePartBtn">
+                            <i class="fas fa-trash me-2"></i>Delete
+                        </button>
+                    </div>
+                    
+                   
+
+                <!-- 8. Follow-up Information -->
+                <div class="mb-4">
+                    <h5 class="border-bottom pb-2">8. Follow-up Information</h5>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Next Follow-up Date</label>
+                            <input type="date" class="form-control" name="followup_date">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Follow-up Time</label>
+                            <input type="time" class="form-control" name="followup_time">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 9. Communication Preferences -->
+                <div class="mb-4">
+                    <h5 class="border-bottom pb-2">9. Communication Preferences</h5>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="radio" name="communication_channel" id="sms" value="SMS">
+                        <label class="form-check-label" for="sms">SMS</label>
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="radio" name="communication_channel" id="email" value="Email">
+                        <label class="form-check-label" for="email">Email</label>
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="radio" name="communication_channel" id="whatsapp" value="WhatsApp">
+                        <label class="form-check-label" for="whatsapp">WhatsApp</label>
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="radio" name="communication_channel" id="phone" value="Phone">
+                        <label class="form-check-label" for="phone">Phone</label>
+                    </div>
+                </div>
+
+                <!-- 10. Marketing Preferences -->
+                <div class="mb-4">
+                    <h5 class="border-bottom pb-2">10. Marketing Preferences</h5>
+                    <div class="mb-3">
+                        <label class="form-label">Can we send promotional and discount messages to you?</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="promotional_messages" id="promo_yes" value="Yes">
+                            <label class="form-check-label" for="promo_yes">Yes</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="promotional_messages" id="promo_no" value="No">
+                            <label class="form-check-label" for="promo_no">No</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 11. Remarks -->
+                <div class="mb-4">
+                    <h5 class="border-bottom pb-2">11. Remarks</h5>
+                    <textarea class="form-control" name="remarks" rows="3" placeholder="Enter any additional remarks"></textarea>
+                </div>
+
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                    <button type="reset" class="btn btn-outline-secondary me-md-2">Clear Form</button>
+                    <button type="submit" class="btn btn-primary">Submit Form</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Add Category Modal 
+<div class="modal fade" id="addCategoryModal" tabindex="-1" aria-labelledby="addCategoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addCategoryModalLabel">Add New Category</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <iframe id="categoryIframe" src="{% url 'add_category' %}" style="width:100%; height:400px; border:none;"></iframe>
+            </div>
+        </div>
+    </div>
+</div>-->
+
+
+<!-- Add Product Modal -->
+<div class="modal fade" id="addProductModal" tabindex="-1" aria-labelledby="addProductModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addProductModalLabel">Add New Product</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addProductForm">
+                    <div class="mb-3">
+                        <label for="new_product_name" class="form-label">Product Name*</label>
+                        <input type="text" class="form-control" id="new_product_name" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="saveProductBtn">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Part Modal -->
+<div class="modal fade" id="addPartModal" tabindex="-1" aria-labelledby="addPartModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addPartModalLabel">Add New Part</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addPartForm">
+                    <div class="mb-3">
+                        <label for="new_part_number" class="form-label">Part Number*</label>
+                        <input type="text" class="form-control" id="new_part_number" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="new_part_description" class="form-label">Description</label>
+                        <input type="text" class="form-control" id="new_part_description">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="savePartBtn">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    .card-header {
+        border-radius: 10px 10px 0 0 !important;
+    }
+    
+    h5 {
+        color: #2c3e50;
+        font-weight: 600;
+    }
+    
+    .form-label {
+        font-weight: 500;
+    }
+    
+    .btn-primary {
+        background-color: #3498db;
+        border-color: #3498db;
+    }
+    
+    .btn-primary:hover {
+        background-color: #2980b9;
+        border-color: #2980b9;
+    }
+    
+    .form-check {
+        margin-bottom: 0.5rem;
+    }
+    
+    textarea {
+        resize: vertical;
+    }
+    
+    #partsTable th {
+        background-color: #f8f9fa;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Link dropdowns
+        function linkDropdowns(idSelect, nameSelect) {
+            idSelect.addEventListener('change', function() {
+                if (this.value) {
+                    const selectedOption = this.options[this.selectedIndex];
+                    const name = selectedOption.text.split(' - ')[1];
+                    
+                    for (let i = 0; i < nameSelect.options.length; i++) {
+                        if (nameSelect.options[i].value === name) {
+                            nameSelect.selectedIndex = i;
+                            break;
+                        }
+                    }
+                } else {
+                    nameSelect.selectedIndex = 0;
+                }
+            });
+            
+            nameSelect.addEventListener('change', function() {
+                if (this.value) {
+                    for (let i = 0; i < idSelect.options.length; i++) {
+                        if (idSelect.options[i].text.includes(this.value)) {
+                            idSelect.selectedIndex = i;
+                            break;
+                        }
+                    }
+                } else {
+                    idSelect.selectedIndex = 0;
+                }
+            });
+        }
+        
+        // Link all dropdown pairs
+        linkDropdowns(document.getElementById('category_id'), document.getElementById('category_name'));
+        linkDropdowns(document.getElementById('product_id'), document.getElementById('product_name'));
+        linkDropdowns(document.getElementById('part_id'), document.getElementById('part_name'));
+        
+        // Save buttons functionality
+        document.getElementById('saveCategoryBtn').addEventListener('click', function() {
+            const name = document.getElementById('new_category_name').value.trim();
+            if (name) {
+                alert(`Category "${name}" would be saved to database`);
+                document.getElementById('new_category_name').value = '';
+                bootstrap.Modal.getInstance(document.getElementById('addCategoryModal')).hide();
+            }
+        });
+        
+        document.getElementById('saveProductBtn').addEventListener('click', function() {
+            const name = document.getElementById('new_product_name').value.trim();
+            if (name) {
+                alert(`Product "${name}" would be saved to database`);
+                document.getElementById('new_product_name').value = '';
+                bootstrap.Modal.getInstance(document.getElementById('addProductModal')).hide();
+            }
+        });
+        
+        document.getElementById('savePartBtn').addEventListener('click', function() {
+            const number = document.getElementById('new_part_number').value.trim();
+            const desc = document.getElementById('new_part_description').value.trim();
+            
+            if (number) {
+                const tbody = document.querySelector('#partsTable tbody');
+                const newRow = tbody.insertRow();
+                
+                newRow.innerHTML = `
+                    <td><input type="checkbox" name="selected_parts" value="${number}"></td>
+                    <td>${number}</td>
+                    <td>${desc || '-'}</td>
+                `;
+                
+                document.getElementById('new_part_number').value = '';
+                document.getElementById('new_part_description').value = '';
+                bootstrap.Modal.getInstance(document.getElementById('addPartModal')).hide();
+            }
+        });
+        
+        
+        
+        
+        
+        
+        // Form validation
+        const forms = document.querySelectorAll('form.needs-validation');
+        Array.from(forms).forEach(form => {
+            form.addEventListener('submit', function(event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            }, false);
+        });
+    });
+ //JavaScript to handle "Other" options 
+ document.addEventListener('DOMContentLoaded', function() {
+    // Hospital Type Other
+    document.getElementById('other_type').addEventListener('change', function() {
+        document.getElementById('hospital_type_other_container').style.display = 
+            this.checked ? 'block' : 'none';
+    });
+    
+    // Telecalling Response Other
+    document.getElementById('other_response').addEventListener('change', function() {
+        document.getElementById('telecalling_response_other_container').style.display = 
+            this.checked ? 'block' : 'none';
+    });
+    //decision maker
+    document.getElementById('other_decision').addEventListener('change', function() {
+        document.getElementById('decision_maker_other_containers').style.display = 
+            this.checked ? 'block' : 'none';
+    });
+    // Add similar handlers for any other "Other" options in your form
+});
+document.addEventListener('DOMContentLoaded', function() {
+    const categoryIdSelect = document.getElementById('category_id');
+    const categoryNameSelect = document.getElementById('category_name');
+    const nameOptions = document.querySelectorAll('.name-option');
+    
+    categoryIdSelect.addEventListener('change', function() {
+        // Hide all name options first
+        nameOptions.forEach(option => {
+            option.style.display = 'none';
+        });
+        
+        // Show only names for selected ID
+        const selectedId = this.value;
+        if (selectedId) {
+            const matchingNames = document.querySelectorAll(`.name-option[data-category-id="${selectedId}"]`);
+            matchingNames.forEach(option => {
+                option.style.display = 'block';
+            });
+            
+            // Select the first visible name by default
+            if (matchingNames.length > 0) {
+                categoryNameSelect.value = matchingNames[0].value;
+            }
+        } else {
+            // Show all names if no ID selected
+            nameOptions.forEach(option => {
+                option.style.display = 'block';
+            });
+        }
+    });
+
+});     
+document.addEventListener('DOMContentLoaded', function() {
+    const productContainer = document.getElementById('productContainer');
+    const addProductBtn = document.getElementById('addProductBtn');
+    let productCount = 1; // Because you already have one default product-row with index 0
+
+    addProductBtn.addEventListener('click', function() {
+        const newRow = document.createElement('div');
+        newRow.className = 'product-row mb-3';
+        newRow.innerHTML = `
+            <div class="row">
+                <div class="col-md-6">
+                    <select class="form-select product-id" name="products[${productCount}][id]" required>
+                        <option value="">Select Product ID</option>
+                        {% for product in products %}
+                        <option value="{{ product.id }}">{{ product.id }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <select class="form-select product-name" name="products[${productCount}][name]" required>
+                        <option value="">Select Product Name</option>
+                        {% for product in products %}
+                        <option value="{{ product.name }}" data-id="{{ product.id }}">{{ product.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        `;
+        productContainer.appendChild(newRow);
+        productCount++;
+    });
+
+    // Listen for change on product-id dropdowns inside productContainer
+    productContainer.addEventListener('change', function(e) {
+        if (e.target.classList.contains('product-id')) {
+            const idSelect = e.target;
+            const productRow = idSelect.closest('.product-row');
+            const nameSelect = productRow.querySelector('.product-name');
+            const selectedId = idSelect.value;
+
+            // Reset name selection
+            nameSelect.value = '';
+
+            // Show only matching product names and hide others
+            Array.from(nameSelect.options).forEach(option => {
+                if (option.value === '' || option.getAttribute('data-id') === selectedId) {
+                    option.hidden = false;
+                } else {
+                    option.hidden = true;
+                }
+            });
+        }
+    });
+});
+</script>
+{% endblock %}

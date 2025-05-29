@@ -1,0 +1,568 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - LeadMaster Pro{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">Dashboard Overview</h1>
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="#"><i class="fas fa-home"></i></a></li>
+            <li class="breadcrumb-item active" aria-current="page">Dashboard</li>
+        </ol>
+    </nav>
+</div>
+
+<div class="row">
+    <!-- Stats Cards -->
+    <div class="col-xl-3 col-md-6">
+        <div class="card card-stats">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted mb-1">New Leads</h6>
+                        <h3 class="mb-0">1,257</h3>
+                        <span class="text-success small">
+                            <i class="fas fa-arrow-up me-1"></i> 12.5%
+                        </span>
+                    </div>
+                    <div class="icon icon-shape bg-gradient-primary text-white rounded-circle">
+                        <i class="fas fa-user-plus"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer bg-transparent pt-0">
+                <div class="progress progress-sm mt-3 mb-0">
+                    <div class="progress-bar bg-primary" style="width: 65%"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+        <div class="card card-stats">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted mb-1">Converted</h6>
+                        <h3 class="mb-0">428</h3>
+                        <span class="text-success small">
+                            <i class="fas fa-arrow-up me-1"></i> 8.3%
+                        </span>
+                    </div>
+                    <div class="icon icon-shape bg-gradient-success text-white rounded-circle">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer bg-transparent pt-0">
+                <div class="progress progress-sm mt-3 mb-0">
+                    <div class="progress-bar bg-success" style="width: 45%"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+        <div class="card card-stats">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted mb-1">Pending</h6>
+                        <h3 class="mb-0">189</h3>
+                        <span class="text-danger small">
+                            <i class="fas fa-arrow-down me-1"></i> 3.2%
+                        </span>
+                    </div>
+                    <div class="icon icon-shape bg-gradient-warning text-white rounded-circle">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer bg-transparent pt-0">
+                <div class="progress progress-sm mt-3 mb-0">
+                    <div class="progress-bar bg-warning" style="width: 35%"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+        <div class="card card-stats">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted mb-1">Revenue</h6>
+                        <h3 class="mb-0">$28.4K</h3>
+                        <span class="text-success small">
+                            <i class="fas fa-arrow-up me-1"></i> 24.1%
+                        </span>
+                    </div>
+                    <div class="icon icon-shape bg-gradient-info text-white rounded-circle">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer bg-transparent pt-0">
+                <div class="progress progress-sm mt-3 mb-0">
+                    <div class="progress-bar bg-info" style="width: 75%"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <!-- Lead Conversion Chart -->
+   <div class="col-xl-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">Lead Conversion Funnel</h5>
+                <div class="card-actions">
+                    <div class="dropdown">
+                        <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="chartDropdown" data-bs-toggle="dropdown">
+                            Last 30 Days
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="#">Last 7 Days</a></li>
+                            <li><a class="dropdown-item" href="#">Last 30 Days</a></li>
+                            <li><a class="dropdown-item" href="#">Last 90 Days</a></li>
+                            <li><a class="dropdown-item" href="#">This Year</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div id="leadConversionChart" style="min-height: 300px;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Top Sources -->
+
+    <div class="col-xl-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">Lead Sources</h5>
+                <div class="card-actions">
+                    <button class="btn btn-sm btn-outline-primary">View All</button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div id="leadSourcesChart" style="min-height: 300px;"></div>
+                <div class="mt-4">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="badge bg-primary me-3" style="width: 20px; height: 20px;"></div>
+                        <div class="flex-grow-1">
+                            <div class="d-flex justify-content-between">
+                                <span>Website</span>
+                                <span class="fw-bold">42%</span>
+                            </div>
+                            <div class="progress progress-sm mt-1">
+                                <div class="progress-bar bg-primary" style="width: 42%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="badge bg-success me-3" style="width: 20px; height: 20px;"></div>
+                        <div class="flex-grow-1">
+                            <div class="d-flex justify-content-between">
+                                <span>Referral</span>
+                                <span class="fw-bold">28%</span>
+                            </div>
+                            <div class="progress progress-sm mt-1">
+                                <div class="progress-bar bg-success" style="width: 28%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="badge bg-warning me-3" style="width: 20px; height: 20px;"></div>
+                        <div class="flex-grow-1">
+                            <div class="d-flex justify-content-between">
+                                <span>Social Media</span>
+                                <span class="fw-bold">18%</span>
+                            </div>
+                            <div class="progress progress-sm mt-1">
+                                <div class="progress-bar bg-warning" style="width: 18%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <div class="badge bg-info me-3" style="width: 20px; height: 20px;"></div>
+                        <div class="flex-grow-1">
+                            <div class="d-flex justify-content-between">
+                                <span>Other</span>
+                                <span class="fw-bold">12%</span>
+                            </div>
+                            <div class="progress progress-sm mt-1">
+                                <div class="progress-bar bg-info" style="width: 12%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <!-- Recent Leads -->
+    <div class="col-xl-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">Recent Leads</h5>
+                <div class="card-actions">
+                    <button class="btn btn-sm btn-outline-primary">View All</button>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped mb-0">
+                        <thead class="bg-light">
+                            <tr>
+                                <th>Name</th>
+                                <th>Source</th>
+                                <th>Status</th>
+                                <th>Date</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <img src="https://ui-avatars.com/api/?name=John+Doe&background=random" class="rounded-circle me-2" width="30" height="30">
+                                        <span>John Doe</span>
+                                    </div>
+                                </td>
+                                <td>Website</td>
+                                <td><span class="badge bg-primary">New</span></td>
+                                <td>Today</td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary"><i class="fas fa-eye"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <img src="https://ui-avatars.com/api/?name=Jane+Smith&background=random" class="rounded-circle me-2" width="30" height="30">
+                                        <span>Jane Smith</span>
+                                    </div>
+                                </td>
+                                <td>Referral</td>
+                                <td><span class="badge bg-success">Converted</span></td>
+                                <td>2 days ago</td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary"><i class="fas fa-eye"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <img src="https://ui-avatars.com/api/?name=Robert+Johnson&background=random" class="rounded-circle me-2" width="30" height="30">
+                                        <span>Robert Johnson</span>
+                                    </div>
+                                </td>
+                                <td>Social Media</td>
+                                <td><span class="badge bg-warning">Pending</span></td>
+                                <td>3 days ago</td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary"><i class="fas fa-eye"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <img src="https://ui-avatars.com/api/?name=Sarah+Williams&background=random" class="rounded-circle me-2" width="30" height="30">
+                                        <span>Sarah Williams</span>
+                                    </div>
+                                </td>
+                                <td>Website</td>
+                                <td><span class="badge bg-danger">Lost</span></td>
+                                <td>5 days ago</td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary"><i class="fas fa-eye"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <img src="https://ui-avatars.com/api/?name=Michael+Brown&background=random" class="rounded-circle me-2" width="30" height="30">
+                                        <span>Michael Brown</span>
+                                    </div>
+                                </td>
+                                <td>Referral</td>
+                                <td><span class="badge bg-success">Converted</span></td>
+                                <td>1 week ago</td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary"><i class="fas fa-eye"></i></button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Activity Timeline -->
+    <div class="col-xl-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">Recent Activity</h5>
+                <div class="card-actions">
+                    <button class="btn btn-sm btn-outline-primary">View All</button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="activity-timeline">
+                    <div class="activity-item">
+                        <div class="activity-badge">
+                            <i class="fas fa-user-plus text-primary"></i>
+                        </div>
+                        <div class="activity-content">
+                            <div class="d-flex justify-content-between">
+                                <h6>New Lead Added</h6>
+                                <small class="text-muted">Just now</small>
+                            </div>
+                            <p class="mb-0">John Doe was added as a new lead from website</p>
+                        </div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-badge">
+                            <i class="fas fa-check-circle text-success"></i>
+                        </div>
+                        <div class="activity-content">
+                            <div class="d-flex justify-content-between">
+                                <h6>Lead Converted</h6>
+                                <small class="text-muted">2 hours ago</small>
+                            </div>
+                            <p class="mb-0">Jane Smith converted to customer</p>
+                        </div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-badge">
+                            <i class="fas fa-envelope text-info"></i>
+                        </div>
+                        <div class="activity-content">
+                            <div class="d-flex justify-content-between">
+                                <h6>Email Sent</h6>
+                                <small class="text-muted">5 hours ago</small>
+                            </div>
+                            <p class="mb-0">Follow-up email sent to Robert Johnson</p>
+                        </div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-badge">
+                            <i class="fas fa-phone-alt text-warning"></i>
+                        </div>
+                        <div class="activity-content">
+                            <div class="d-flex justify-content-between">
+                                <h6>Call Completed</h6>
+                                <small class="text-muted">1 day ago</small>
+                            </div>
+                            <p class="mb-0">Successful call with Sarah Williams</p>
+                        </div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-badge">
+                            <i class="fas fa-calendar-check text-danger"></i>
+                        </div>
+                        <div class="activity-content">
+                            <div class="d-flex justify-content-between">
+                                <h6>Meeting Scheduled</h6>
+                                <small class="text-muted">2 days ago</small>
+                            </div>
+                            <p class="mb-0">Meeting scheduled with Michael Brown</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Custom styles for dashboard */
+    .card-stats {
+        border-left: 4px solid;
+        border-radius: 0.5rem;
+    }
+    
+    .card-stats .icon {
+        width: 50px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+    }
+    
+    .card-stats.border-primary {
+        border-left-color: var(--primary-color);
+    }
+    
+    .card-stats.border-success {
+        border-left-color: var(--success-color);
+    }
+    
+    .card-stats.border-warning {
+        border-left-color: var(--warning-color);
+    }
+    
+    .card-stats.border-info {
+        border-left-color: var(--info-color);
+    }
+    
+    .activity-timeline {
+        position: relative;
+        padding-left: 40px;
+    }
+    
+    .activity-item {
+        position: relative;
+        padding-bottom: 20px;
+    }
+    
+    .activity-item:not(:last-child):before {
+        content: '';
+        position: absolute;
+        left: -25px;
+        top: 20px;
+        bottom: 0;
+        width: 1px;
+        background-color: rgba(0, 0, 0, 0.1);
+    }
+    
+    [data-bs-theme="dark"] .activity-item:not(:last-child):before {
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+    
+    .activity-badge {
+        position: absolute;
+        left: -40px;
+        top: 0;
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        background-color: rgba(94, 114, 228, 0.1);
+        color: var(--primary-color);
+    }
+    
+    .activity-content {
+        padding: 10px 15px;
+        background-color: rgba(0, 0, 0, 0.02);
+        border-radius: 0.5rem;
+    }
+    
+    [data-bs-theme="dark"] .activity-content {
+        background-color: rgba(255, 255, 255, 0.05);
+    }
+    
+    .table-hover tbody tr:hover {
+        background-color: rgba(0, 0, 0, 0.02);
+    }
+    
+    [data-bs-theme="dark"] .table-hover tbody tr:hover {
+        background-color: rgba(255, 255, 255, 0.05);
+    }
+</style>
+
+{% endblock %}
+
+{% block extra_js %}
+<!-- Include ApexCharts library -->
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+
+<!-- Render the chart -->
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    var conversionOptions = {
+        series: [{
+            name: 'Leads',
+            data: [1200, 800, 500, 300, 200]
+        }],
+        chart: {
+            type: 'bar',
+            height: 350,
+            toolbar: {
+                show: false
+            }
+        },
+        plotOptions: {
+            bar: {
+                borderRadius: 4,
+                horizontal: true,
+            }
+        },
+        colors: ['#5e72e4'],
+        dataLabels: {
+            enabled: false
+        },
+        xaxis: {
+            categories: ['Visitors', 'Leads', 'Qualified', 'Proposal', 'Closed'],
+        },
+        tooltip: {
+            theme: document.documentElement.getAttribute('data-bs-theme') || 'light'
+        }
+    };
+
+    var chart = new ApexCharts(document.querySelector("#leadConversionChart"), conversionOptions);
+    chart.render();
+});
+
+
+
+    // Lead Sources Chart
+    var sourcesOptions = {
+        series: [42, 28, 18, 12],
+        chart: {
+            type: 'donut',
+            height: 300
+        },
+        labels: ['Website', 'Referral', 'Social Media', 'Other'],
+        colors: ['#5e72e4', '#2dce89', '#fb6340', '#11cdef'],
+        legend: {
+            position: 'bottom'
+        },
+        plotOptions: {
+            pie: {
+                donut: {
+                    size: '65%',
+                    labels: {
+                        show: true,
+                        total: {
+                            show: true,
+                            label: 'Total Leads',
+                            color: '#6c757d'
+                        }
+                    }
+                }
+            }
+        },
+        tooltip: {
+            theme: document.documentElement.getAttribute('data-bs-theme')
+        }
+    };
+
+    var sourcesChart = new ApexCharts(document.querySelector("#leadSourcesChart"), sourcesOptions);
+    sourcesChart.render();
+
+    // Update charts when theme changes
+    document.addEventListener('themeChanged', function() {
+        conversionChart.updateOptions({
+            tooltip: {
+                theme: document.documentElement.getAttribute('data-bs-theme')
+            }
+        });
+        sourcesChart.updateOptions({
+            tooltip: {
+                theme: document.documentElement.getAttribute('data-bs-theme')
+            }
+        });
+    });
+</script>
+{% endblock %}
