@@ -10,4 +10,4 @@ class LeadForm(forms.ModelForm):
             'followup_time': forms.TimeInput(attrs={'type': 'time'}),
             'remarks': forms.Textarea(attrs={'rows': 3}),
         }
-        #iioo
+        

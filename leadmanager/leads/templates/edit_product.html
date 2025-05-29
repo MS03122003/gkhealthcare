@@ -6,32 +6,38 @@
 <div class="container mt-5">
   <h2 class="mb-4">Edit Product</h2>
   
+  <!-- Success/Error Messages -->
+  {% if messages %}
+      {% for message in messages %}
+          <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+              {{ message }}
+              <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+          </div>
+      {% endfor %}
+  {% endif %}
+  
   <form method="POST" enctype="multipart/form-data">
     {% csrf_token %}
     
     <div class="row mb-3">
       <div class="col-md-6">
         <label for="product_id" class="form-label">Product ID</label>
-        <input type="text" name="product_id" id="product_id" class="form-control" value="{{ product.product_id }}" readonly>
+        <input type="text" name="product_id" id="product_id" class="form-control" value="{{ product.id }}" readonly>
       </div>
       <div class="col-md-6">
         <label for="name" class="form-label">Product Name</label>
-        <input type="text" name="name" id="name" class="form-control" value="{{ product.name }}">
+        <input type="text" name="name" id="name" class="form-control" value="{{ product.name }}" required>
       </div>
     </div>
 
     <div class="row mb-3">
       <div class="col-md-4">
-        <label for="selling_price_with_tax" class="form-label">Selling Price (With Tax)</label>
-        <input type="number" step="0.01" name="selling_price_with_tax" id="selling_price_with_tax" class="form-control" value="{{ product.selling_price_with_tax }}">
+        <label for="selling_price_with_tax" class="form-label">Selling Price</label>
+        <input type="number" step="0.01" name="selling_price_with_tax" id="selling_price_with_tax" class="form-control" value="{{ product.selling_price|default:0 }}" min="0">
       </div>
-      <!-- <div class="col-md-4">
-        <label for="selling_price_without_tax" class="form-label">Selling Price (Without Tax)</label>
-        <input type="number" step="0.01" name="selling_price_without_tax" id="selling_price_without_tax" class="form-control" value="{{ product.selling_price_without_tax }}">
-      </div> -->
       <div class="col-md-4">
         <label for="tax_percentage" class="form-label">Tax %</label>
-        <input type="number" step="0.01" name="tax_percentage" id="tax_percentage" class="form-control" value="{{ product.tax_percentage }}">
+        <input type="number" step="0.01" name="tax_percentage" id="tax_percentage" class="form-control" value="{{ product.tax_percent|default:0 }}" min="0" max="100">
       </div>
     </div>
 
@@ -66,13 +72,9 @@
 
     <div class="row mb-3">
       <div class="col-md-6">
-        <label for="purchase_price_with_tax" class="form-label">Purchase Price (With Tax)</label>
-        <input type="number" step="0.01" name="purchase_price_with_tax" id="purchase_price_with_tax" class="form-control" value="{{ product.purchase_price_with_tax }}">
+        <label for="purchase_price_with_tax" class="form-label">Purchase Price</label>
+        <input type="number" step="0.01" name="purchase_price_with_tax" id="purchase_price_with_tax" class="form-control" value="{{ product.purchase_price|default:0 }}" min="0">
       </div>
-      <!-- <div class="col-md-6">
-        <label for="purchase_price_without_tax" class="form-label">Purchase Price (Without Tax)</label>
-        <input type="number" step="0.01" name="purchase_price_without_tax" id="purchase_price_without_tax" class="form-control" value="{{ product.purchase_price_without_tax }}">
-      </div> -->
     </div>
 
     <div class="mb-3">
@@ -80,6 +82,10 @@
       {% if product.image %}
         <div class="mb-2">
           <img src="{{ product.image.url }}" alt="Product Image" width="150" class="img-thumbnail">
+        </div>
+      {% elif product.product_image %}
+        <div class="mb-2">
+          <img src="{{ product.product_image.url }}" alt="Product Image" width="150" class="img-thumbnail">
         </div>
       {% endif %}
       <input type="file" name="image" id="image" class="form-control">

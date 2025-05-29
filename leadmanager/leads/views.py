@@ -319,28 +319,72 @@ def add_product(request):
     
     categories = Category.objects.all()
     return render(request, 'add_product.html', {'categories': categories})
-
 def edit_product(request, product_id):
     product = get_object_or_404(Product, id=product_id)
-    if request.method == 'POST':
-        product.name = request.POST['product_name']
-        product.selling_price = request.POST['selling_price']
-        product.tax_percent = request.POST['tax_percent']
-        product.purchase_price = request.POST['purchase_price']
-        product.unit = request.POST['product_unit']
-        product.hsn_sac = request.POST.get('hsn_sac')
-        product.description = request.POST.get('description')
-        product.category_id = request.POST.get('category_id')
-
-        if 'product_image' in request.FILES:
-            product.product_image = request.FILES['product_image']
-        product.save()
-        return redirect('product_detail', product_id=product.id)
     
+    if request.method == 'POST':
+        try:
+            # Helper function to handle decimal fields
+            def get_decimal_value(field_name, default_value):
+                value = request.POST.get(field_name, '').strip()
+                if value == '' or value is None:
+                    return default_value
+                try:
+                    return float(value)
+                except (ValueError, TypeError):
+                    return default_value
+            
+            # Update product fields with proper validation
+            product.name = request.POST.get('name', '').strip() or product.name
+            
+            # Handle decimal fields safely
+            product.selling_price = get_decimal_value('selling_price_with_tax', product.selling_price)
+            product.tax_percent = get_decimal_value('tax_percentage', product.tax_percent)
+            product.purchase_price = get_decimal_value('purchase_price_with_tax', product.purchase_price)
+            
+            # Handle text fields
+            product.unit = request.POST.get('unit', product.unit)
+            product.hsn_sac = request.POST.get('hsn_sac', '').strip() or product.hsn_sac
+            product.description = request.POST.get('description', '').strip() or product.description
+            
+            # Handle category
+            category_id = request.POST.get('category')
+            if category_id:
+                product.category_id = category_id
+
+            # Handle image upload (check both possible field names)
+            if 'image' in request.FILES:
+                if hasattr(product, 'image'):
+                    product.image = request.FILES['image']
+                elif hasattr(product, 'product_image'):
+                    product.product_image = request.FILES['image']
+            
+            product.save()
+            messages.success(request, 'Product updated successfully!')
+            return redirect('product_list')
+            
+        except Exception as e:
+            messages.error(request, f'Error updating product: {str(e)}')
+            return redirect('edit_product', product_id=product_id)
+    
+    # Get all categories for the dropdown
     categories = Category.objects.all()
-    return render(request, 'edit_product.html', {'product': product, 'categories': categories})
+    return render(request, 'edit_product.html', {
+        'product': product, 
+        'categories': categories
+    })
 
 def delete_product(request, product_id):
     product = get_object_or_404(Product, id=product_id)
-    product.delete()
-    return redirect('product_list')
+    
+    if request.method == 'POST':
+        try:
+            product.delete()
+            messages.success(request, f'Product "{product.name}" deleted successfully!')
+            return redirect('product_list')
+        except Exception as e:
+            messages.error(request, f'Error deleting product: {str(e)}')
+            return redirect('product_list')
+    
+    # For GET request, show confirmation page
+    return render(request, 'delete_product_confirm.html', {'product': product})
