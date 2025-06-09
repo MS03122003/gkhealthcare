@@ -133,3 +133,19 @@ class PaymentFollowUp(models.Model):
         verbose_name_plural = "Payment Follow-ups"
 
 
+class Parts(models.Model):
+    id = models.CharField(max_length=50, primary_key=True)
+    name = models.CharField(max_length=255)
+    parts_image = models.ImageField(upload_to='parts_images/', blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = 'Parts'
+        verbose_name_plural = 'Parts'
+        ordering = ['name']
+
+    def __str__(self):
+        return f"{self.name} ({self.id})"
+
+

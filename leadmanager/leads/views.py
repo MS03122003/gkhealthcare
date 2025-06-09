@@ -11,6 +11,7 @@ from django.http import JsonResponse
 from .models import Category
 from .models import Product, Category
 from .models import Product
+from .models import Parts 
 
 def payment_followup_form(request):
     return render(request, 'payment_followup_form.html')
@@ -388,3 +389,62 @@ def delete_product(request, product_id):
     
     # For GET request, show confirmation page
     return render(request, 'delete_product_confirm.html', {'product': product})
+
+def parts_list(request):
+    parts_list = Parts.objects.all()
+    return render(request, 'parts_list.html', {'parts_list': parts_list})
+
+def parts_detail(request, parts_id):
+    parts = get_object_or_404(Parts, id=parts_id)
+    return render(request, 'parts_detail.html', {'parts': parts})
+
+def add_parts(request):
+    if request.method == 'POST':
+        Parts.objects.create(
+            id=request.POST.get('parts_id'),
+            name=request.POST.get('parts_name'),
+            parts_image=request.FILES.get('parts_image')
+        )
+        return redirect('parts_list')
+    
+    return render(request, 'add_parts.html')
+
+def edit_parts(request, parts_id):
+    parts = get_object_or_404(Parts, id=parts_id)
+    
+    if request.method == 'POST':
+        try:
+            # Update parts fields
+            parts.name = request.POST.get('name', '').strip() or parts.name
+            
+            # Handle image upload (check both possible field names)
+            if 'image' in request.FILES:
+                if hasattr(parts, 'image'):
+                    parts.image = request.FILES['image']
+                elif hasattr(parts, 'parts_image'):
+                    parts.parts_image = request.FILES['image']
+            
+            parts.save()
+            messages.success(request, 'Parts updated successfully!')
+            return redirect('parts_list')
+            
+        except Exception as e:
+            messages.error(request, f'Error updating parts: {str(e)}')
+            return redirect('edit_parts', parts_id=parts_id)
+    
+    return render(request, 'edit_parts.html', {'parts': parts})
+
+def delete_parts(request, parts_id):
+    parts = get_object_or_404(Parts, id=parts_id)
+    
+    if request.method == 'POST':
+        try:
+            parts.delete()
+            messages.success(request, f'Parts "{parts.name}" deleted successfully!')
+            return redirect('parts_list')
+        except Exception as e:
+            messages.error(request, f'Error deleting parts: {str(e)}')
+            return redirect('parts_list')
+    
+    # For GET request, show parts list
+    return redirect('parts_list')

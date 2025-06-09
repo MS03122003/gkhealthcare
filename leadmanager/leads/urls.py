@@ -22,8 +22,10 @@ urlpatterns = [
     path('products/<str:product_id>/', views.product_detail, name='product_detail'),
     path('products/<str:product_id>/edit/', views.edit_product, name='edit_product'),
     path('products/<str:product_id>/delete/', views.delete_product, name='delete_product'),
-    path('products/add/', views.add_product, name='save_product')
-
-
-    
+    path('products/add/', views.add_product, name='save_product'),  
+    path('parts/', views.parts_list, name='parts_list'),
+    path('parts/add/', views.add_parts, name='add_parts'),
+    path('parts/<str:parts_id>/', views.parts_detail, name='parts_detail'),
+    path('parts/<str:parts_id>/edit/', views.edit_parts, name='edit_parts'),
+    path('parts/<str:parts_id>/delete/', views.delete_parts, name='delete_parts'),
 ]
