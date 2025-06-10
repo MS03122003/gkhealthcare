@@ -16,6 +16,32 @@
         </div>
     </div>
 
+    <div class="row mb-3">
+        <div class="col">
+            <label>Select Category (Optional)</label>
+            <select name="category" class="form-control">
+                <option value="">-- Select Category --</option>
+                {% for category in categories %}
+                    <option value="{{ category.id }}">{{ category.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col">
+            <label>Select Product (Optional)</label>
+            <select name="product" class="form-control">
+                <option value="">-- Select Product --</option>
+                {% for product in products %}
+                    <option value="{{ product.id }}">{{ product.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <label>Description (Optional)</label>
+        <textarea name="description" class="form-control" rows="3" placeholder="Enter parts description..."></textarea>
+    </div>
+
     <div class="mb-3">
         <label>Parts Image</label>
         <input type="file" name="parts_image" class="form-control">

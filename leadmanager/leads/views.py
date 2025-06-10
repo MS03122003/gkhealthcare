@@ -389,6 +389,7 @@ def delete_product(request, product_id):
     
     # For GET request, show confirmation page
     return render(request, 'delete_product_confirm.html', {'product': product})
+# Updated Parts-related view functions to add to your views.py
 
 def parts_list(request):
     parts_list = Parts.objects.all()
@@ -400,14 +401,41 @@ def parts_detail(request, parts_id):
 
 def add_parts(request):
     if request.method == 'POST':
-        Parts.objects.create(
-            id=request.POST.get('parts_id'),
-            name=request.POST.get('parts_name'),
-            parts_image=request.FILES.get('parts_image')
-        )
-        return redirect('parts_list')
+        try:
+            # Get category and product objects if provided
+            category = None
+            product = None
+            
+            category_id = request.POST.get('category')
+            if category_id:
+                category = get_object_or_404(Category, id=category_id)
+            
+            product_id = request.POST.get('product')
+            if product_id:
+                product = get_object_or_404(Product, id=product_id)
+            
+            # Create the parts object
+            Parts.objects.create(
+                id=request.POST.get('parts_id'),
+                name=request.POST.get('parts_name'),
+                category=category,
+                product=product,
+                description=request.POST.get('description', '').strip() or None,
+                parts_image=request.FILES.get('parts_image')
+            )
+            messages.success(request, 'Parts added successfully!')
+            return redirect('parts_list')
+        except Exception as e:
+            messages.error(request, f'Error adding parts: {str(e)}')
     
-    return render(request, 'add_parts.html')
+    # Get categories and products for the form
+    categories = Category.objects.all()
+    products = Product.objects.all()
+    
+    return render(request, 'add_parts.html', {
+        'categories': categories,
+        'products': products
+    })
 
 def edit_parts(request, parts_id):
     parts = get_object_or_404(Parts, id=parts_id)
@@ -416,6 +444,21 @@ def edit_parts(request, parts_id):
         try:
             # Update parts fields
             parts.name = request.POST.get('name', '').strip() or parts.name
+            parts.description = request.POST.get('description', '').strip() or None
+            
+            # Handle category selection
+            category_id = request.POST.get('category')
+            if category_id:
+                parts.category = get_object_or_404(Category, id=category_id)
+            else:
+                parts.category = None
+            
+            # Handle product selection
+            product_id = request.POST.get('product')
+            if product_id:
+                parts.product = get_object_or_404(Product, id=product_id)
+            else:
+                parts.product = None
             
             # Handle image upload (check both possible field names)
             if 'image' in request.FILES:
@@ -432,7 +475,15 @@ def edit_parts(request, parts_id):
             messages.error(request, f'Error updating parts: {str(e)}')
             return redirect('edit_parts', parts_id=parts_id)
     
-    return render(request, 'edit_parts.html', {'parts': parts})
+    # Get categories and products for the form
+    categories = Category.objects.all()
+    products = Product.objects.all()
+    
+    return render(request, 'edit_parts.html', {
+        'parts': parts,
+        'categories': categories,
+        'products': products
+    })
 
 def delete_parts(request, parts_id):
     parts = get_object_or_404(Parts, id=parts_id)

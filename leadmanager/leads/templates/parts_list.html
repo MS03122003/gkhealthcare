@@ -17,6 +17,9 @@
                         <tr>
                             <th>ID</th>
                             <th>Name</th>
+                            <th>Category</th>
+                            <th>Product</th>
+                            <th>Description</th>
                             <th>Image</th>
                             <th>Actions</th>
                         </tr>
@@ -26,6 +29,27 @@
                         <tr>
                             <td>{{ parts.id }}</td>
                             <td>{{ parts.name }}</td>
+                            <td>
+                                {% if parts.category %}
+                                    {{ parts.category.name }}
+                                {% else %}
+                                    <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if parts.product %}
+                                    {{ parts.product.name }}
+                                {% else %}
+                                    <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if parts.description %}
+                                    {{ parts.description|truncatechars:30 }}
+                                {% else %}
+                                    <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
                             <td>
                                 {% if parts.parts_image %}
                                     <img src="{{ parts.parts_image.url }}" width="50" height="50" class="img-thumbnail">

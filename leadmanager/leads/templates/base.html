@@ -211,35 +211,35 @@
         <div class="sidebar-nav">
             <ul class="nav flex-column">
                 <li class="nav-item">
-                    <a class="nav-link active" href="{% url 'dashboard' %}">
+                    <a class="nav-link {% if request.path == '/dashboard/' %}active{% endif %}" href="{% url 'dashboard' %}">
                         <i class="fas fa-tachometer-alt"></i>
                         <span>Dashboard</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url 'new_lead' %}">
+                    <a class="nav-link {% if request.path == '/new-lead/' %}active{% endif %}" href="{% url 'new_lead' %}">
                         <i class="fas fa-user-plus"></i>
                         <span>New Lead</span>
                     </a>
                 </li>
-                <li class="nav-item">
+                <!-- <li class="nav-item">
                     <a href="{% url 'payment_followup_form' %}" class="nav-link">
                      <i class="nav-icon fas fa-money-check-alt"></i>
                          <span>Payment</span>
                      </a>
-                </li>
+                </li> -->
                 <li class="nav-item">
-                     <a class="nav-link" href="{% url 'category_list' %}">
+                     <a class="nav-link {% if request.path == '/categories/' %}active{% endif %} " href="{% url 'category_list' %}">
                         <i class="fas fa-list-alt me-2"></i> Categories
                      </a>
                 </li>
                 <li class="nav-item">
-                     <a class="nav-link" href="{% url 'product_list' %}">
+                     <a class="nav-link {% if request.path == '/products/' %}active{% endif %}" href="{% url 'product_list' %}">
                         <i class="fas fa-box me-2"></i> Products
                      </a>
                 </li>
-                <li class="nav-item">
-                     <a class="nav-link" href="{% url 'parts_list' %}">
+                <li class="nav-item ">
+                     <a class="nav-link {% if request.path == '/parts/' %}active{% endif %}" href="{% url 'parts_list' %}">
                         <i class="fas fa-cog me-2"></i> Parts
                      </a>
                 </li>

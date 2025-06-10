@@ -132,20 +132,24 @@ class PaymentFollowUp(models.Model):
         verbose_name = "Payment Follow-up"
         verbose_name_plural = "Payment Follow-ups"
 
-
 class Parts(models.Model):
-    id = models.CharField(max_length=50, primary_key=True)
-    name = models.CharField(max_length=255)
+    id = models.CharField(max_length=100, primary_key=True)
+    name = models.CharField(max_length=200)
+    
+    # New optional fields
+    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True)
+    product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True, blank=True)
+    description = models.TextField(blank=True, null=True)
+    
     parts_image = models.ImageField(upload_to='parts_images/', blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    class Meta:
-        verbose_name = 'Parts'
-        verbose_name_plural = 'Parts'
-        ordering = ['name']
-
     def __str__(self):
-        return f"{self.name} ({self.id})"
+        return self.name
 
+    class Meta:
+        verbose_name = "Parts"
+        verbose_name_plural = "Parts"
+        ordering = ['-created_at']
 

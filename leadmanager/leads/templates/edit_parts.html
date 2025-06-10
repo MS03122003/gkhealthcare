@@ -30,6 +30,32 @@
       </div>
     </div>
 
+    <div class="row mb-3">
+      <div class="col-md-6">
+        <label for="category" class="form-label">Select Category (Optional)</label>
+        <select name="category" id="category" class="form-control">
+          <option value="">-- Select Category --</option>
+          {% for category in categories %}
+            <option value="{{ category.id }}" {% if parts.category_id == category.id %}selected{% endif %}>{{ category.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-6">
+        <label for="product" class="form-label">Select Product (Optional)</label>
+        <select name="product" id="product" class="form-control">
+          <option value="">-- Select Product --</option>
+          {% for product in products %}
+            <option value="{{ product.id }}" {% if parts.product_id == product.id %}selected{% endif %}>{{ product.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <label for="description" class="form-label">Description (Optional)</label>
+      <textarea name="description" id="description" class="form-control" rows="3" placeholder="Enter parts description...">{{ parts.description }}</textarea>
+    </div>
+
     <div class="mb-3">
       <label for="image" class="form-label">Parts Image</label>
       {% if parts.image %}
