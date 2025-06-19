@@ -153,3 +153,37 @@ class Parts(models.Model):
         verbose_name_plural = "Parts"
         ordering = ['-created_at']
 
+
+class Customer(models.Model):
+    # Company Information
+    company_name = models.CharField(max_length=200, blank=True, null=True)
+    customer_name = models.CharField(max_length=200)
+    
+    # Contact Information
+    phone_number = models.CharField(max_length=15)
+    phone_number_2 = models.CharField(max_length=15, blank=True, null=True)
+    email = models.EmailField(blank=True, null=True)
+    gstin = models.CharField(max_length=20, blank=True, null=True)
+    
+    # Address Information
+    address_line_1 = models.TextField(blank=True, null=True)
+    address_line_2 = models.TextField(blank=True, null=True)
+    city = models.CharField(max_length=100, blank=True, null=True)
+    state = models.CharField(max_length=100, blank=True, null=True)
+    pincode = models.CharField(max_length=10, blank=True, null=True)
+    
+    # Website
+    company_website = models.URLField(blank=True, null=True)
+    
+    # System Fields
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.customer_name} - {self.company_name or 'Individual'}"
+    
+    class Meta:
+        verbose_name = "Customer"
+        verbose_name_plural = "Customers"
+        ordering = ['-created_at']

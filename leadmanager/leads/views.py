@@ -1,7 +1,10 @@
 from django.shortcuts import render, redirect,get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-
+from .models import Customer
+from django.core.paginator import Paginator
+from django.db.models import Q
+from django.contrib import messages
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
 from django.contrib import messages
@@ -499,3 +502,134 @@ def delete_parts(request, parts_id):
     
     # For GET request, show parts list
     return redirect('parts_list')
+
+@login_required
+def add_customer(request):
+    """Display the add customer form"""
+    return render(request, 'add_customer.html')
+
+
+@login_required
+def save_customer(request):
+    """Save customer data to database"""
+    if request.method == 'POST':
+        try:
+            customer = Customer.objects.create(
+                company_name=request.POST.get('company_name', '').strip() or None,
+                customer_name=request.POST.get('customer_name', '').strip(),
+                phone_number=request.POST.get('phone_number', '').strip(),
+                phone_number_2=request.POST.get('phone_number_2', '').strip() or None,
+                email=request.POST.get('email', '').strip() or None,
+                gstin=request.POST.get('gstin', '').strip() or None,
+                address_line_1=request.POST.get('address_line_1', '').strip() or None,
+                address_line_2=request.POST.get('address_line_2', '').strip() or None,
+                city=request.POST.get('city', '').strip() or None,
+                state=request.POST.get('state', '').strip() or None,
+                pincode=request.POST.get('pincode', '').strip() or None,
+                company_website=request.POST.get('company_website', '').strip() or None,
+                created_by=request.user,
+            )
+            messages.success(request, f'Customer "{customer.customer_name}" added successfully!')
+            return redirect('customer_list')  # or use 'total_customer' if separate view
+
+        except Exception as e:
+            messages.error(request, f'Error adding customer: {str(e)}')
+            return redirect('add_customer')
+
+    return redirect('add_customer')
+
+
+@login_required
+def customer_list(request):
+    """Display list of all customers with search and filter functionality"""
+    customers = Customer.objects.all()
+
+    # Search
+    search_query = request.GET.get('search', '')
+    if search_query:
+        customers = customers.filter(
+            Q(customer_name__icontains=search_query) |
+            Q(company_name__icontains=search_query) |
+            Q(phone_number__icontains=search_query) |
+            Q(email__icontains=search_query) |
+            Q(city__icontains=search_query)
+        )
+
+    # Filters
+    state_filter = request.GET.get('state', '')
+    if state_filter:
+        customers = customers.filter(state__icontains=state_filter)
+
+    city_filter = request.GET.get('city', '')
+    if city_filter:
+        customers = customers.filter(city__icontains=city_filter)
+
+    states = Customer.objects.exclude(state__isnull=True).exclude(state='').values_list('state', flat=True).distinct().order_by('state')
+    cities = Customer.objects.exclude(city__isnull=True).exclude(city='').values_list('city', flat=True).distinct().order_by('city')
+
+    paginator = Paginator(customers, 10)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'customer_list.html', {
+        'customers': page_obj,
+        'search_query': search_query,
+        'state_filter': state_filter,
+        'city_filter': city_filter,
+        'states': states,
+        'cities': cities,
+        'total_customers': Customer.objects.count(),
+    })
+
+
+@login_required
+def customer_detail(request, customer_id):
+    customer = get_object_or_404(Customer, id=customer_id)
+    return render(request, 'customer_detail.html', {'customer': customer})
+
+
+@login_required
+def edit_customer(request, customer_id):
+    customer = get_object_or_404(Customer, id=customer_id)
+
+    if request.method == 'POST':
+        try:
+            customer.company_name = request.POST.get('company_name', '').strip() or None
+            customer.customer_name = request.POST.get('customer_name', '').strip()
+            customer.phone_number = request.POST.get('phone_number', '').strip()
+            customer.phone_number_2 = request.POST.get('phone_number_2', '').strip() or None
+            customer.email = request.POST.get('email', '').strip() or None
+            customer.gstin = request.POST.get('gstin', '').strip() or None
+            customer.address_line_1 = request.POST.get('address_line_1', '').strip() or None
+            customer.address_line_2 = request.POST.get('address_line_2', '').strip() or None
+            customer.city = request.POST.get('city', '').strip() or None
+            customer.state = request.POST.get('state', '').strip() or None
+            customer.pincode = request.POST.get('pincode', '').strip() or None
+            customer.company_website = request.POST.get('company_website', '').strip() or None
+
+            customer.save()
+            messages.success(request, f'Customer "{customer.customer_name}" updated successfully!')
+            return redirect('customer_detail', customer_id=customer.id)
+
+        except Exception as e:
+            messages.error(request, f'Error updating customer: {str(e)}')
+            return redirect('edit_customer', customer_id=customer_id)
+
+    return render(request, 'edit_customer.html', {'customer': customer})
+
+
+@login_required
+def delete_customer(request, customer_id):
+    customer = get_object_or_404(Customer, id=customer_id)
+
+    if request.method == 'POST':
+        try:
+            customer_name = customer.customer_name
+            customer.delete()
+            messages.success(request, f'Customer "{customer_name}" deleted successfully!')
+            return redirect('customer_list')
+        except Exception as e:
+            messages.error(request, f'Error deleting customer: {str(e)}')
+            return redirect('customer_list')
+
+    return render(request, 'delete_customer.html', {'customer': customer})

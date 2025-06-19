@@ -28,4 +28,11 @@ urlpatterns = [
     path('parts/<str:parts_id>/', views.parts_detail, name='parts_detail'),
     path('parts/<str:parts_id>/edit/', views.edit_parts, name='edit_parts'),
     path('parts/<str:parts_id>/delete/', views.delete_parts, name='delete_parts'),
+    path('customers/', views.customer_list, name='customer_list'),
+    path('customers/add/', views.add_customer, name='add_customer'),
+    path('customers/save/', views.save_customer, name='save_customer'),
+    path('customers/<int:customer_id>/', views.customer_detail, name='customer_detail'),
+    path('customers/<int:customer_id>/edit/', views.edit_customer, name='edit_customer'),
+    path('customers/delete/<int:customer_id>/', views.delete_customer, name='delete_customer'),
+
 ]

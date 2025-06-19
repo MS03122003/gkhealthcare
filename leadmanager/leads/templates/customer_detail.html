@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+
+{% block title %}Customer Details - LeadMaster Pro{% endblock %}
+
+{% block content %}
+<div class="container py-3">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div class="d-flex align-items-center">
+            <a href="{% url 'customer_list' %}" class="btn btn-outline-secondary me-3">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+            <h4 class="mb-0 fw-bold">{{ customer.customer_name }}</h4>
+        </div>
+        <div>
+            <a href="{% url 'edit_customer' customer.id %}" class="btn btn-warning me-2">
+                <i class="fas fa-edit me-1"></i>Edit
+            </a>
+            <button class="btn btn-outline-danger" onclick="confirmDelete('{{ customer.id }}', '{{ customer.customer_name }}')">
+                <i class="fas fa-trash me-1"></i>Delete
+            </button>
+        </div>
+    </div>
+
+    <!-- Customer Info -->
+    <div class="row g-3">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-light fw-bold">Basic Info</div>
+                <div class="card-body">
+                    <p><strong>Name:</strong> {{ customer.customer_name }}</p>
+                    <p><strong>Phone:</strong> {{ customer.phone_number }}{% if customer.phone_number_2 %}<br>{{ customer.phone_number_2 }}{% endif %}</p>
+                    <p><strong>Email:</strong> {{ customer.email|default:"N/A" }}</p>
+                    <p><strong>Company:</strong> {{ customer.company_name|default:"Individual" }}</p>
+                    <p><strong>GSTIN:</strong> {{ customer.gstin|default:"N/A" }}</p>
+                    <p><strong>Customer ID:</strong> GK{{ customer.id }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-light fw-bold">Address</div>
+                <div class="card-body">
+                    <p><strong>Address Line 1:</strong> {{ customer.address_line_1|default:"-" }}</p>
+                    <p><strong>Address Line 2:</strong> {{ customer.address_line_2|default:"-" }}</p>
+                    <p><strong>City:</strong> {{ customer.city|default:"-" }}</p>
+                    <p><strong>State:</strong> {{ customer.state|default:"-" }}</p>
+                    <p><strong>Pincode:</strong> {{ customer.pincode|default:"-" }}</p>
+                    <p><strong>Website:</strong>
+                        {% if customer.company_website %}
+                            <a href="{{ customer.company_website }}" target="_blank">{{ customer.company_website }}</a>
+                        {% else %}
+                            N/A
+                        {% endif %}
+                    </p>
+                    <p><strong>Created At:</strong> {{ customer.created_at|date:"M d, Y H:i" }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Employees -->
+    <div class="card my-4">
+        <div class="card-header d-flex justify-content-between align-items-center bg-light fw-bold">
+            Employees
+            <button class="btn btn-sm btn-primary rounded-pill">
+                <i class="fas fa-plus me-1"></i>Add Employee
+            </button>
+        </div>
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-12 col-md-6">
+                    <div class="border rounded p-3 bg-light">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <p><strong>Name:</strong> manoj</p>
+                                <p><strong>Phone:</strong> 6385793702</p>
+                                <p><strong>Email:</strong> N/A</p>
+                                <p><strong>DOB:</strong> 31-05-2025</p>
+                                <p><strong>Position:</strong> Accountant</p>
+                            </div>
+                            <div class="text-end">
+                                <button class="btn btn-sm text-primary"><i class="fas fa-edit"></i></button>
+                                <button class="btn btn-sm text-danger"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>
+                        <div class="mt-2 d-flex gap-2">
+                            <button class="btn btn-sm rounded-circle" style="background: linear-gradient(45deg, #667eea 0%, #764ba2 100%); color: white;">
+                                <i class="fas fa-phone fa-sm"></i>
+                            </button>
+                            <button class="btn btn-sm rounded-circle" style="background: #25D366; color: white;">
+                                <i class="fab fa-whatsapp fa-sm"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Products -->
+    <div class="card mb-5">
+        <div class="card-header d-flex justify-content-between align-items-center bg-light fw-bold">
+            Customer Products
+            <button class="btn btn-sm btn-primary rounded-pill">
+                <i class="fas fa-plus me-1"></i>Add Product
+            </button>
+        </div>
+        <div class="card-body text-center">
+            <i class="fas fa-box-open fa-3x text-muted mb-3"></i>
+            <p class="text-muted">No products added yet</p>
+        </div>
+    </div>
+
+    <!-- Back Button -->
+    <div class="text-center">
+        <a href="{% url 'customer_list' %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-1"></i>Back to List
+        </a>
+    </div>
+</div>
+
+<!-- Confirm Delete Script -->
+<script>
+    function confirmDelete(customerId, customerName) {
+        if (confirm(`Are you sure you want to delete customer: ${customerName}?`)) {
+            window.location.href = `/customers/delete/${customerId}/`;
+        }
+    }
+</script>
+
+{% endblock %}
