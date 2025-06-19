@@ -15,6 +15,7 @@ from .models import Category
 from .models import Product, Category
 from .models import Product
 from .models import Parts 
+from .models import Employee
 
 def payment_followup_form(request):
     return render(request, 'payment_followup_form.html')
@@ -585,7 +586,12 @@ def customer_list(request):
 @login_required
 def customer_detail(request, customer_id):
     customer = get_object_or_404(Customer, id=customer_id)
-    return render(request, 'customer_detail.html', {'customer': customer})
+    employees = customer.employees.all()  # Uses related_name='employees' from Employee model
+
+    return render(request, 'customer_detail.html', {
+        'customer': customer,
+        'employees': employees
+    })
 
 
 @login_required
@@ -633,3 +639,75 @@ def delete_customer(request, customer_id):
             return redirect('customer_list')
 
     return render(request, 'delete_customer.html', {'customer': customer})
+
+
+def add_employee(request, customer_id):
+    """Add new employee linked to a customer"""
+    customer = get_object_or_404(Customer, id=customer_id)
+
+    if request.method == 'POST':
+        try:
+            position = request.POST.get('position')
+            name = request.POST.get('employee_name')  # match with form field
+            phone_number = request.POST.get('phone_number')
+            email = request.POST.get('email')
+            date_of_birth = request.POST.get('date_of_birth')
+
+            if not all([position, name, phone_number, email, date_of_birth]):
+                messages.error(request, 'All fields are required!')
+                return render(request, 'add_employee.html', {'customer': customer})
+
+            Employee.objects.create(
+                customer=customer,  # Assuming you have a ForeignKey to Customer in Employee model
+                position=position,
+                name=name,
+                phone_number=phone_number,
+                email=email,
+                date_of_birth=date_of_birth
+            )
+
+            messages.success(request, f'Employee {name} added successfully!')
+            return redirect('customer_detail', customer_id=customer.id)
+
+        except Exception as e:
+            messages.error(request, f'Error adding employee: {str(e)}')
+            return render(request, 'add_employee.html', {'customer': customer})
+
+    return render(request, 'add_employee.html', {'customer': customer})
+
+def edit_employee(request, employee_id):
+    """Edit existing employee"""
+    employee = get_object_or_404(Employee, id=employee_id)
+    customer_id = employee.customer.id  # Assuming Employee has a ForeignKey to Customer
+
+    if request.method == 'POST':
+        try:
+            employee.position = request.POST.get('position')
+            employee.name = request.POST.get('employee_name')
+            employee.phone_number = request.POST.get('phone_number')
+            employee.email = request.POST.get('email')
+            employee.date_of_birth = request.POST.get('date_of_birth')
+            employee.save()
+
+            messages.success(request, f'Employee {employee.name} updated successfully!')
+            return redirect('customer_detail', customer_id=customer_id)
+
+        except Exception as e:
+            messages.error(request, f'Error updating employee: {str(e)}')
+
+    return render(request, 'add_employee.html', {
+        'employee': employee,
+        'customer': employee.customer,
+        'is_edit': True
+    })
+
+def delete_employee(request, employee_id):
+    """Delete employee"""
+    employee = get_object_or_404(Employee, id=employee_id)
+    customer_id = employee.customer.id
+
+    employee_name = employee.name
+    employee.delete()
+
+    messages.success(request, f'Employee {employee_name} deleted successfully!')
+    return redirect('customer_detail', customer_id=customer_id)

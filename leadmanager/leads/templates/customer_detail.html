@@ -3,94 +3,100 @@
 {% block title %}Customer Details - LeadMaster Pro{% endblock %}
 
 {% block content %}
-<div class="container py-3">
+<div class="container-fluid px-2 px-md-4 py-3">
     <!-- Header -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div class="d-flex align-items-center">
-            <a href="{% url 'customer_list' %}" class="btn btn-outline-secondary me-3">
+            <a href="{% url 'customer_list' %}" class="btn btn-outline-secondary me-2 me-md-3 btn-mobile">
                 <i class="fas fa-arrow-left"></i>
+                <span class="d-none d-md-inline ms-1">Back</span>
             </a>
-            <h4 class="mb-0 fw-bold">{{ customer.customer_name }}</h4>
+            <h4 class="mb-0 fw-bold text-truncate">{{ customer.customer_name }}</h4>
         </div>
-        <div>
-            <a href="{% url 'edit_customer' customer.id %}" class="btn btn-warning me-2">
-                <i class="fas fa-edit me-1"></i>Edit
+        <div class="d-flex">
+            <a href="{% url 'edit_customer' customer.id %}" class="btn btn-warning me-2 btn-mobile">
+                <i class="fas fa-edit"></i>
+                <span class="d-none d-md-inline ms-1">Edit</span>
             </a>
-            <button class="btn btn-outline-danger" onclick="confirmDelete('{{ customer.id }}', '{{ customer.customer_name }}')">
-                <i class="fas fa-trash me-1"></i>Delete
+            <button class="btn btn-outline-danger btn-mobile" onclick="confirmDelete('{{ customer.id }}', '{{ customer.customer_name }}')">
+                <i class="fas fa-trash"></i>
+                <span class="d-none d-md-inline ms-1">Delete</span>
             </button>
         </div>
     </div>
 
     <!-- Customer Info -->
-    <div class="row g-3">
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header bg-light fw-bold">Basic Info</div>
-                <div class="card-body">
-                    <p><strong>Name:</strong> {{ customer.customer_name }}</p>
-                    <p><strong>Phone:</strong> {{ customer.phone_number }}{% if customer.phone_number_2 %}<br>{{ customer.phone_number_2 }}{% endif %}</p>
-                    <p><strong>Email:</strong> {{ customer.email|default:"N/A" }}</p>
-                    <p><strong>Company:</strong> {{ customer.company_name|default:"Individual" }}</p>
-                    <p><strong>GSTIN:</strong> {{ customer.gstin|default:"N/A" }}</p>
-                    <p><strong>Customer ID:</strong> GK{{ customer.id }}</p>
+    <div class="row g-2 g-md-3">
+        <div class="col-12 col-lg-6">
+            <div class="card h-100">
+                <div class="card-header bg-light fw-bold">
+                    <i class="fas fa-user me-2"></i>Basic Info
                 </div>
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header bg-light fw-bold">Address</div>
                 <div class="card-body">
-                    <p><strong>Address Line 1:</strong> {{ customer.address_line_1|default:"-" }}</p>
-                    <p><strong>Address Line 2:</strong> {{ customer.address_line_2|default:"-" }}</p>
-                    <p><strong>City:</strong> {{ customer.city|default:"-" }}</p>
-                    <p><strong>State:</strong> {{ customer.state|default:"-" }}</p>
-                    <p><strong>Pincode:</strong> {{ customer.pincode|default:"-" }}</p>
-                    <p><strong>Website:</strong>
-                        {% if customer.company_website %}
-                            <a href="{{ customer.company_website }}" target="_blank">{{ customer.company_website }}</a>
-                        {% else %}
-                            N/A
-                        {% endif %}
-                    </p>
-                    <p><strong>Created At:</strong> {{ customer.created_at|date:"M d, Y H:i" }}</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Employees -->
-    <div class="card my-4">
-        <div class="card-header d-flex justify-content-between align-items-center bg-light fw-bold">
-            Employees
-            <button class="btn btn-sm btn-primary rounded-pill">
-                <i class="fas fa-plus me-1"></i>Add Employee
-            </button>
-        </div>
-        <div class="card-body">
-            <div class="row g-3">
-                <div class="col-12 col-md-6">
-                    <div class="border rounded p-3 bg-light">
-                        <div class="d-flex justify-content-between">
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <strong>Name:</strong> {{ customer.customer_name }}
+                        </div>
+                        <div class="info-item">
+                            <strong>Phone:</strong> 
                             <div>
-                                <p><strong>Name:</strong> manoj</p>
-                                <p><strong>Phone:</strong> 6385793702</p>
-                                <p><strong>Email:</strong> N/A</p>
-                                <p><strong>DOB:</strong> 31-05-2025</p>
-                                <p><strong>Position:</strong> Accountant</p>
-                            </div>
-                            <div class="text-end">
-                                <button class="btn btn-sm text-primary"><i class="fas fa-edit"></i></button>
-                                <button class="btn btn-sm text-danger"><i class="fas fa-trash"></i></button>
+                                {{ customer.phone_number }}
+                                {% if customer.phone_number_2 %}
+                                    <br><span class="text-muted">{{ customer.phone_number_2 }}</span>
+                                {% endif %}
                             </div>
                         </div>
-                        <div class="mt-2 d-flex gap-2">
-                            <button class="btn btn-sm rounded-circle" style="background: linear-gradient(45deg, #667eea 0%, #764ba2 100%); color: white;">
-                                <i class="fas fa-phone fa-sm"></i>
-                            </button>
-                            <button class="btn btn-sm rounded-circle" style="background: #25D366; color: white;">
-                                <i class="fab fa-whatsapp fa-sm"></i>
-                            </button>
+                        <div class="info-item">
+                            <strong>Email:</strong> {{ customer.email|default:"N/A" }}
+                        </div>
+                        <div class="info-item">
+                            <strong>Company:</strong> {{ customer.company_name|default:"Individual" }}
+                        </div>
+                        <div class="info-item">
+                            <strong>GSTIN:</strong> {{ customer.gstin|default:"N/A" }}
+                        </div>
+                        <div class="info-item">
+                            <strong>Customer ID:</strong> <span class="badge bg-primary">GK{{ customer.id }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-lg-6">
+            <div class="card h-100">
+                <div class="card-header bg-light fw-bold">
+                    <i class="fas fa-map-marker-alt me-2"></i>Address
+                </div>
+                <div class="card-body">
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <strong>Address Line 1:</strong> {{ customer.address_line_1|default:"-" }}
+                        </div>
+                        <div class="info-item">
+                            <strong>Address Line 2:</strong> {{ customer.address_line_2|default:"-" }}
+                        </div>
+                        <div class="info-item">
+                            <strong>City:</strong> {{ customer.city|default:"-" }}
+                        </div>
+                        <div class="info-item">
+                            <strong>State:</strong> {{ customer.state|default:"-" }}
+                        </div>
+                        <div class="info-item">
+                            <strong>Pincode:</strong> {{ customer.pincode|default:"-" }}
+                        </div>
+                        <div class="info-item">
+                            <strong>Website:</strong>
+                            {% if customer.company_website %}
+                                <a href="{{ customer.company_website }}" target="_blank" class="text-decoration-none">
+                                    {{ customer.company_website|truncatechars:30 }}
+                                    <i class="fas fa-external-link-alt ms-1 small"></i>
+                                </a>
+                            {% else %}
+                                N/A
+                            {% endif %}
+                        </div>
+                        <div class="info-item">
+                            <strong>Created:</strong> {{ customer.created_at|date:"M d, Y H:i" }}
                         </div>
                     </div>
                 </div>
@@ -98,24 +104,104 @@
         </div>
     </div>
 
-    <!-- Products -->
-    <div class="card mb-5">
+    <!-- Employees -->
+    <div class="card my-3 my-md-4">
         <div class="card-header d-flex justify-content-between align-items-center bg-light fw-bold">
-            Customer Products
-            <button class="btn btn-sm btn-primary rounded-pill">
-                <i class="fas fa-plus me-1"></i>Add Product
+            <span><i class="fas fa-users me-2"></i>Employees</span>
+            <a href="{% url 'add_employee' customer.id %}" class="btn btn-sm btn-primary rounded-pill btn-mobile">
+                <i class="fas fa-plus"></i>
+                <span class="d-none d-sm-inline ms-1">Add Employee</span>
+            </a>
+        </div>
+        <div class="card-body">
+            {% if employees %}
+                <div class="row g-2 g-md-3">
+                    {% for employee in employees %}
+                    <div class="col-12 col-md-6 col-xl-4">
+                        <div class="employee-card">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <div class="employee-info flex-grow-1">
+                                    <h6 class="mb-1 fw-bold text-primary">{{ employee.name }}</h6>
+                                    <div class="employee-details">
+                                        <div class="detail-row">
+                                            <i class="fas fa-briefcase me-2 text-muted"></i>
+                                            <span class="fw-medium">{{ employee.position }}</span>
+                                        </div>
+                                        <div class="detail-row">
+                                            <i class="fas fa-phone me-2 text-muted"></i>
+                                            <span>{{ employee.phone_number }}</span>
+                                        </div>
+                                        {% if employee.email %}
+                                        <div class="detail-row">
+                                            <i class="fas fa-envelope me-2 text-muted"></i>
+                                            <span class="text-truncate">{{ employee.email }}</span>
+                                        </div>
+                                        {% endif %}
+                                        {% if employee.date_of_birth %}
+                                        <div class="detail-row">
+                                            <i class="fas fa-birthday-cake me-2 text-muted"></i>
+                                            <span>{{ employee.date_of_birth|date:"d-M-Y" }}</span>
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="employee-actions">
+                                    <button class="btn btn-sm btn-outline-primary me-1" onclick="editEmployee('{{ employee.id }}')">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger" onclick="deleteEmployee('{{ employee.id }}', '{{ employee.name }}')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="employee-contact-buttons">
+                                <button class="btn btn-sm contact-btn call-btn" onclick="callEmployee('{{ employee.phone_number }}')">
+                                    <i class="fas fa-phone fa-sm"></i>
+                                </button>
+                                <button class="btn btn-sm contact-btn whatsapp-btn" onclick="whatsappEmployee('{{ employee.phone_number }}')">
+                                    <i class="fab fa-whatsapp fa-sm"></i>
+                                </button>
+                                {% if employee.email %}
+                                <button class="btn btn-sm contact-btn email-btn" onclick="emailEmployee('{{ employee.email }}')">
+                                    <i class="fas fa-envelope fa-sm"></i>
+                                </button>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="text-center py-4">
+                    <i class="fas fa-users fa-3x text-muted mb-3"></i>
+                    <p class="text-muted mb-3">No employees added yet</p>
+                    <a href="{% url 'add_employee' customer.id %}" class="btn btn-primary">
+                        <i class="fas fa-plus me-2"></i>Add First Employee
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Products -->
+    <div class="card mb-4 mb-md-5">
+        <div class="card-header d-flex justify-content-between align-items-center bg-light fw-bold">
+            <span><i class="fas fa-box me-2"></i>Customer Products</span>
+            <button class="btn btn-sm btn-primary rounded-pill btn-mobile">
+                <i class="fas fa-plus"></i>
+                <span class="d-none d-sm-inline ms-1">Add Product</span>
             </button>
         </div>
-        <div class="card-body text-center">
+        <div class="card-body text-center py-4">
             <i class="fas fa-box-open fa-3x text-muted mb-3"></i>
             <p class="text-muted">No products added yet</p>
         </div>
     </div>
 
     <!-- Back Button -->
-    <div class="text-center">
+    <div class="text-center d-md-none mb-3">
         <a href="{% url 'customer_list' %}" class="btn btn-secondary">
-            <i class="fas fa-arrow-left me-1"></i>Back to List
+            <i class="fas fa-arrow-left me-2"></i>Back to List
         </a>
     </div>
 </div>
@@ -127,6 +213,172 @@
             window.location.href = `/customers/delete/${customerId}/`;
         }
     }
+
+    function editEmployee(employeeId) {
+        window.location.href = `/customers/employee/edit/${employeeId}/`;
+    }
+
+    function deleteEmployee(employeeId, employeeName) {
+        if (confirm(`Are you sure you want to delete employee: ${employeeName}?`)) {
+            window.location.href = `/customers/employee/delete/${employeeId}/`;
+        }
+    }
+
+    function callEmployee(phoneNumber) {
+        window.open(`tel:${phoneNumber}`, '_self');
+    }
+
+    function whatsappEmployee(phoneNumber) {
+        window.open(`https://wa.me/${phoneNumber}`, '_blank');
+    }
+
+    function emailEmployee(email) {
+        window.open(`mailto:${email}`, '_self');
+    }
 </script>
+
+<style>
+/* Mobile-first responsive styles */
+.btn-mobile {
+    padding: 8px 12px;
+    border-radius: 8px;
+}
+
+.info-grid {
+    display: grid;
+    gap: 12px;
+}
+
+.info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.info-item strong {
+    color: #495057;
+    font-size: 0.9rem;
+}
+
+.employee-card {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border: 1px solid #dee2e6;
+    border-radius: 12px;
+    padding: 16px;
+    transition: all 0.3s ease;
+    height: 100%;
+}
+
+.employee-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.employee-details {
+    display: grid;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.detail-row {
+    display: flex;
+    align-items: center;
+    font-size: 0.9rem;
+}
+
+.detail-row i {
+    width: 16px;
+    font-size: 0.8rem;
+}
+
+.employee-actions {
+    display: flex;
+    flex-shrink: 0;
+}
+
+.employee-contact-buttons {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid #dee2e6;
+}
+
+.contact-btn {
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    transition: all 0.3s ease;
+}
+
+.call-btn {
+    background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.whatsapp-btn {
+    background: #25D366;
+    color: white;
+}
+
+.email-btn {
+    background: #dc3545;
+    color: white;
+}
+
+.contact-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+/* Tablet and desktop styles */
+@media (min-width: 768px) {
+    .btn-mobile {
+        padding: 10px 16px;
+    }
+    
+    .info-item {
+        flex-direction: row;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .info-item strong {
+        min-width: 120px;
+        flex-shrink: 0;
+    }
+    
+    .employee-card {
+        padding: 20px;
+    }
+    
+    .detail-row {
+        font-size: 0.95rem;
+    }
+}
+
+@media (min-width: 992px) {
+    .employee-details {
+        grid-template-columns: 1fr 1fr;
+        gap: 12px 16px;
+    }
+}
+
+/* Print styles */
+@media print {
+    .btn, .employee-actions, .employee-contact-buttons {
+        display: none !important;
+    }
+    
+    .card {
+        border: 1px solid #000 !important;
+        box-shadow: none !important;
+    }
+}
+</style>
 
 {% endblock %}

@@ -187,3 +187,31 @@ class Customer(models.Model):
         verbose_name = "Customer"
         verbose_name_plural = "Customers"
         ordering = ['-created_at']
+
+class Employee(models.Model):
+    POSITION_CHOICES = [
+        ('manager', 'Manager'),
+        ('developer', 'Developer'),
+        ('designer', 'Designer'),
+        ('analyst', 'Analyst'),
+        ('hr', 'HR'),
+        ('sales', 'Sales'),
+        ('marketing', 'Marketing'),
+        ('finance', 'Finance'),
+        ('admin', 'Admin'),
+        ('intern', 'Intern'),
+    ]
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='employees')
+    position = models.CharField(max_length=50, choices=POSITION_CHOICES)
+    name = models.CharField(max_length=100)
+    phone_number = models.CharField(max_length=15)
+    email = models.EmailField()
+    date_of_birth = models.DateField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    def __str__(self):
+        return f"{self.name} - {self.position}"
+    
+    class Meta:
+        ordering = ['-created_at']
