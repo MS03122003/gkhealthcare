@@ -56,7 +56,7 @@
                             <strong>GSTIN:</strong> {{ customer.gstin|default:"N/A" }}
                         </div>
                         <div class="info-item">
-                            <strong>Customer ID:</strong> <span class="badge bg-primary">GK{{ customer.id }}</span>
+                            <strong>Customer ID:</strong> <span class="badge bg-primary">{{ customer.id }}</span>
                         </div>
                     </div>
                 </div>
@@ -145,13 +145,17 @@
                                         {% endif %}
                                     </div>
                                 </div>
-                                <div class="employee-actions">
-                                    <button class="btn btn-sm btn-outline-primary me-1" onclick="editEmployee('{{ employee.id }}')">
+                                 <div class="employee-actions">
+                                    <a href="{% url 'edit_employee' employee.id %}" class="btn btn-sm btn-outline-primary action-btn" title="Edit Employee">
                                         <i class="fas fa-edit"></i>
-                                    </button>
-                                    <button class="btn btn-sm btn-outline-danger" onclick="deleteEmployee('{{ employee.id }}', '{{ employee.name }}')">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
+                                    </a>
+                                    <form method="post" action="{% url 'delete_employee' employee.id %}" style="display:inline;">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-sm btn-outline-danger action-btn" title="Delete Employee"
+                                            onclick="return confirm('Are you sure you want to delete employee: {{ employee.name }}?')">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
                                 </div>
                             </div>
                             <div class="employee-contact-buttons">
@@ -187,16 +191,76 @@
     <div class="card mb-4 mb-md-5">
         <div class="card-header d-flex justify-content-between align-items-center bg-light fw-bold">
             <span><i class="fas fa-box me-2"></i>Customer Products</span>
-            <button class="btn btn-sm btn-primary rounded-pill btn-mobile">
+            <a href="{% url 'add_customer_product' customer.id %}" class="btn btn-sm btn-primary rounded-pill btn-mobile">
                 <i class="fas fa-plus"></i>
                 <span class="d-none d-sm-inline ms-1">Add Product</span>
-            </button>
+            </a>
         </div>
-        <div class="card-body text-center py-4">
-            <i class="fas fa-box-open fa-3x text-muted mb-3"></i>
-            <p class="text-muted">No products added yet</p>
+        <div class="card-body">
+            {% if customer_products %}
+                <div class="row g-2 g-md-3">
+                    {% for product in customer_products %}
+                    <div class="col-12 col-md-6 col-xl-4">
+                        <div class="product-card">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <div class="product-info flex-grow-1">
+                                    {% if product.product_image %}
+                                        <img src="{{ product.product_image.url }}" alt="{{ product.product_name }}" class="product-image mb-2">
+                                    {% endif %}
+                                    <h6 class="mb-1 fw-bold text-primary">{{ product.product_name }}</h6>
+                                    <div class="product-details">
+                                        <div class="detail-row">
+                                            <i class="fas fa-tag me-2 text-muted"></i>
+                                            <span class="fw-medium">{{ product.product_id }}</span>
+                                        </div>
+                                        <div class="detail-row">
+                                            <i class="fas fa-rupee-sign me-2 text-muted"></i>
+                                            <span>₹{{ product.selling_price }}</span>
+                                        </div>
+                                        {% if product.category %}
+                                        <div class="detail-row">
+                                            <i class="fas fa-folder me-2 text-muted"></i>
+                                            <span>{{ product.category.name }}</span>
+                                        </div>
+                                        {% endif %}
+                                        {% if product.product_unit %}
+                                        <div class="detail-row">
+                                            <i class="fas fa-weight me-2 text-muted"></i>
+                                            <span>{{ product.get_product_unit_display }}</span>
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="product-actions">
+                                    <button class="btn btn-sm btn-outline-primary me-1" onclick="editProduct('{{ product.id }}')">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger" onclick="deleteProduct('{{ product.id }}', '{{ product.product_name }}')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            {% if product.description %}
+                            <div class="product-description">
+                                <small class="text-muted">{{ product.description|truncatechars:100 }}</small>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="text-center py-4">
+                    <i class="fas fa-box-open fa-3x text-muted mb-3"></i>
+                    <p class="text-muted mb-3">No products added yet</p>
+                    <a href="{% url 'add_customer_product' customer.id %}" class="btn btn-primary">
+                        <i class="fas fa-plus me-2"></i>Add First Product
+                    </a>
+                </div>
+            {% endif %}
         </div>
     </div>
+
 
     <!-- Back Button -->
     <div class="text-center d-md-none mb-3">
@@ -215,15 +279,24 @@
     }
 
     function editEmployee(employeeId) {
-        window.location.href = `/customers/employee/edit/${employeeId}/`;
+        window.location.href = `/edit_employee/${employeeId}/`;
     }
 
-    function deleteEmployee(employeeId, employeeName) {
-        if (confirm(`Are you sure you want to delete employee: ${employeeName}?`)) {
-            window.location.href = `/customers/employee/delete/${employeeId}/`;
+    // function deleteEmployee(employeeId, employeeName) {
+    //     if (confirm(`Are you sure you want to delete employee: ${employeeName}?`)) {
+    //         window.location.href = `/delete_employee/${employeeId}/`;
+    //     }
+    // }
+
+       function editProduct(productId) {
+        window.location.href = `/customers/product/edit/${productId}/`;
+    }
+
+    function deleteProduct(productId, productName) {
+        if (confirm(`Are you sure you want to delete product: ${productName}?`)) {
+            window.location.href = `/customers/product/delete/${productId}/`;
         }
     }
-
     function callEmployee(phoneNumber) {
         window.open(`tel:${phoneNumber}`, '_self');
     }
@@ -267,6 +340,7 @@
     padding: 16px;
     transition: all 0.3s ease;
     height: 100%;
+    position: relative;
 }
 
 .employee-card:hover {
@@ -294,13 +368,18 @@
 .employee-actions {
     display: flex;
     flex-shrink: 0;
+    position:absolute;
+    top: 8px;
+    right: 8px;
+    gap: 4px;
 }
+
 
 .employee-contact-buttons {
     display: flex;
     gap: 8px;
-    margin-top: 12px;
-    padding-top: 12px;
+    margin-top: 10px;
+    padding-top: 10px;
     border-top: 1px solid #dee2e6;
 }
 

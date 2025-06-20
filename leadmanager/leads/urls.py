@@ -37,6 +37,9 @@ urlpatterns = [
     path('add-employee/<int:customer_id>/', views.add_employee, name='add_employee'),
     path('edit-employee/<int:employee_id>/', views.edit_employee, name='edit_employee'),
     path('delete-employee/<int:employee_id>/', views.delete_employee, name='delete_employee'),
+   path('customers/<int:customer_id>/add-product/', views.add_customer_product, name='add_customer_product'),
+   path('customers/product/edit/<int:product_id>/', views.edit_customer_product, name='edit_customer_product'),
+   path('customers/product/delete/<int:product_id>/', views.delete_customer_product, name='delete_customer_product'),
 
     
 

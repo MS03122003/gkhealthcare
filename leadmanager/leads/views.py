@@ -16,6 +16,10 @@ from .models import Product, Category
 from .models import Product
 from .models import Parts 
 from .models import Employee
+from .models import CustomerProduct
+from .models import Customer
+import datetime
+import os
 
 def payment_followup_form(request):
     return render(request, 'payment_followup_form.html')
@@ -587,10 +591,12 @@ def customer_list(request):
 def customer_detail(request, customer_id):
     customer = get_object_or_404(Customer, id=customer_id)
     employees = customer.employees.all()  # Uses related_name='employees' from Employee model
+    customer_products = customer.products.all()  # Assuming you have a CustomerProduct model
 
     return render(request, 'customer_detail.html', {
         'customer': customer,
-        'employees': employees
+        'employees': employees,
+        'customer_products': customer_products
     })
 
 
@@ -695,19 +701,106 @@ def edit_employee(request, employee_id):
         except Exception as e:
             messages.error(request, f'Error updating employee: {str(e)}')
 
-    return render(request, 'add_employee.html', {
+    return render(request, 'edit_employee.html', {
         'employee': employee,
         'customer': employee.customer,
         'is_edit': True
     })
+
 
 def delete_employee(request, employee_id):
     """Delete employee"""
     employee = get_object_or_404(Employee, id=employee_id)
     customer_id = employee.customer.id
 
-    employee_name = employee.name
-    employee.delete()
+    if request.method == 'POST':
+        try:
+            employee_name = employee.name
+            employee.delete()
+            messages.success(request, f'Employee {employee_name} deleted successfully!')
+            return redirect('customer_detail', customer_id=customer_id)
+        except Exception as e:
+            messages.error(request, f'Error deleting employee: {str(e)}')
+            return redirect('customer_detail', customer_id=customer_id)
 
-    messages.success(request, f'Employee {employee_name} deleted successfully!')
-    return redirect('customer_detail', customer_id=customer_id)
+    return render(request, 'delete_employee.html', {'employee': employee})
+
+
+def add_customer_product(request, customer_id):
+   customer = get_object_or_404(Customer, id=customer_id)
+   categories = Category.objects.all()  # Assuming you have a Category model
+   
+   if request.method == 'POST':
+       # Create the product
+       product = CustomerProduct.objects.create(
+           customer=customer,
+           product_id=request.POST.get('product_id'),
+           product_name=request.POST.get('product_name'),
+           selling_price=request.POST.get('selling_price'),
+           purchase_price=request.POST.get('purchase_price') or None,
+           tax_percent=request.POST.get('tax_percent') or None,
+           product_unit=request.POST.get('product_unit'),
+           hsn_sac=request.POST.get('hsn_sac'),
+           category_id=request.POST.get('category_id') or None,
+           description=request.POST.get('description'),
+       )
+       
+       # Handle image upload
+       if request.FILES.get('product_image'):
+           product.product_image = request.FILES['product_image']
+           product.save()
+       
+       messages.success(request, f'Product "{product.product_name}" added successfully!')
+       return redirect('customer_detail', customer_id=customer.id)
+   
+   context = {
+       'customer': customer,
+       'categories': categories,
+   }
+   return render(request, 'add_customer_product.html', context)
+
+def edit_customer_product(request, product_id):
+   product = get_object_or_404(CustomerProduct, id=product_id)
+   customer = product.customer
+   categories = Category.objects.all()
+   
+   if request.method == 'POST':
+       # Update product fields
+       product.product_id = request.POST.get('product_id')
+       product.product_name = request.POST.get('product_name')
+       product.selling_price = request.POST.get('selling_price')
+       product.purchase_price = request.POST.get('purchase_price') or None
+       product.tax_percent = request.POST.get('tax_percent') or None
+       product.product_unit = request.POST.get('product_unit')
+       product.hsn_sac = request.POST.get('hsn_sac')
+       product.category_id = request.POST.get('category_id') or None
+       product.description = request.POST.get('description')
+       
+       # Handle image upload
+       if request.FILES.get('product_image'):
+           product.product_image = request.FILES['product_image']
+       
+       product.save()
+       messages.success(request, f'Product "{product.product_name}" updated successfully!')
+       return redirect('customer_detail', customer_id=customer.id)
+   
+   context = {
+       'customer': customer,
+       'product': product,
+       'categories': categories,
+   }
+   return render(request, 'edit_customer_product.html', context)
+
+def delete_customer_product(request, product_id):
+   product = get_object_or_404(CustomerProduct, id=product_id)
+   customer_id = product.customer.id
+   product_name = product.product_name
+   
+   # Delete the product image file if it exists
+   if product.product_image:
+       if os.path.isfile(product.product_image.path):
+           os.remove(product.product_image.path)
+   
+   product.delete()
+   messages.success(request, f'Product "{product_name}" deleted successfully!')
+   return redirect('customer_detail', customer_id=customer_id)
