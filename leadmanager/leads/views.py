@@ -804,3 +804,299 @@ def delete_customer_product(request, product_id):
    product.delete()
    messages.success(request, f'Product "{product_name}" deleted successfully!')
    return redirect('customer_detail', customer_id=customer_id)
+
+# Add these imports to your existing views.py file
+from .models import Vendor, VendorEmployee, VendorProduct
+
+# Vendor Views
+@login_required
+def add_vendor(request):
+    """Display the add vendor form"""
+    return render(request, 'add_vendor.html')
+
+@login_required
+def save_vendor(request):
+    """Save vendor data to database"""
+    if request.method == 'POST':
+        try:
+            vendor = Vendor.objects.create(
+                company_name=request.POST.get('company_name', '').strip() or None,
+                vendor_name=request.POST.get('vendor_name', '').strip(),
+                phone_number=request.POST.get('phone_number', '').strip(),
+                phone_number_2=request.POST.get('phone_number_2', '').strip() or None,
+                email=request.POST.get('email', '').strip() or None,
+                gstin=request.POST.get('gstin', '').strip() or None,
+                address_line_1=request.POST.get('address_line_1', '').strip() or None,
+                address_line_2=request.POST.get('address_line_2', '').strip() or None,
+                city=request.POST.get('city', '').strip() or None,
+                state=request.POST.get('state', '').strip() or None,
+                pincode=request.POST.get('pincode', '').strip() or None,
+                company_website=request.POST.get('company_website', '').strip() or None,
+                created_by=request.user,
+            )
+            messages.success(request, f'Vendor "{vendor.vendor_name}" added successfully!')
+            return redirect('vendor_list')
+
+        except Exception as e:
+            messages.error(request, f'Error adding vendor: {str(e)}')
+            return redirect('add_vendor')
+
+    return redirect('add_vendor')
+
+@login_required
+def vendor_list(request):
+    """Display list of all vendors with search and filter functionality"""
+    vendors = Vendor.objects.all()
+
+    # Search
+    search_query = request.GET.get('search', '')
+    if search_query:
+        vendors = vendors.filter(
+            Q(vendor_name__icontains=search_query) |
+            Q(company_name__icontains=search_query) |
+            Q(phone_number__icontains=search_query) |
+            Q(email__icontains=search_query) |
+            Q(city__icontains=search_query)
+        )
+
+    # Filters
+    state_filter = request.GET.get('state', '')
+    if state_filter:
+        vendors = vendors.filter(state__icontains=state_filter)
+
+    city_filter = request.GET.get('city', '')
+    if city_filter:
+        vendors = vendors.filter(city__icontains=city_filter)
+
+    states = Vendor.objects.exclude(state__isnull=True).exclude(state='').values_list('state', flat=True).distinct().order_by('state')
+    cities = Vendor.objects.exclude(city__isnull=True).exclude(city='').values_list('city', flat=True).distinct().order_by('city')
+
+    paginator = Paginator(vendors, 10)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'vendor_list.html', {
+        'vendors': page_obj,
+        'search_query': search_query,
+        'state_filter': state_filter,
+        'city_filter': city_filter,
+        'states': states,
+        'cities': cities,
+        'total_vendors': Vendor.objects.count(),
+    })
+
+@login_required
+def vendor_detail(request, vendor_id):
+    vendor = get_object_or_404(Vendor, id=vendor_id)
+    employees = vendor.employees.all()
+    vendor_products = vendor.products.all()
+
+    return render(request, 'vendor_detail.html', {
+        'vendor': vendor,
+        'employees': employees,
+        'vendor_products': vendor_products
+    })
+
+@login_required
+def edit_vendor(request, vendor_id):
+    vendor = get_object_or_404(Vendor, id=vendor_id)
+
+    if request.method == 'POST':
+        try:
+            vendor.company_name = request.POST.get('company_name', '').strip() or None
+            vendor.vendor_name = request.POST.get('vendor_name', '').strip()
+            vendor.phone_number = request.POST.get('phone_number', '').strip()
+            vendor.phone_number_2 = request.POST.get('phone_number_2', '').strip() or None
+            vendor.email = request.POST.get('email', '').strip() or None
+            vendor.gstin = request.POST.get('gstin', '').strip() or None
+            vendor.address_line_1 = request.POST.get('address_line_1', '').strip() or None
+            vendor.address_line_2 = request.POST.get('address_line_2', '').strip() or None
+            vendor.city = request.POST.get('city', '').strip() or None
+            vendor.state = request.POST.get('state', '').strip() or None
+            vendor.pincode = request.POST.get('pincode', '').strip() or None
+            vendor.company_website = request.POST.get('company_website', '').strip() or None
+
+            vendor.save()
+            messages.success(request, f'Vendor "{vendor.vendor_name}" updated successfully!')
+            return redirect('vendor_detail', vendor_id=vendor.id)
+
+        except Exception as e:
+            messages.error(request, f'Error updating vendor: {str(e)}')
+            return redirect('edit_vendor', vendor_id=vendor_id)
+
+    return render(request, 'edit_vendor.html', {'vendor': vendor})
+
+@login_required
+def delete_vendor(request, vendor_id):
+    vendor = get_object_or_404(Vendor, id=vendor_id)
+
+    if request.method == 'POST':
+        try:
+            vendor_name = vendor.vendor_name
+            vendor.delete()
+            messages.success(request, f'Vendor "{vendor_name}" deleted successfully!')
+            return redirect('vendor_list')
+        except Exception as e:
+            messages.error(request, f'Error deleting vendor: {str(e)}')
+            return redirect('vendor_list')
+
+    return render(request, 'delete_vendor.html', {'vendor': vendor})
+
+# Vendor Employee Views
+def add_vendor_employee(request, vendor_id):
+    """Add new employee linked to a vendor"""
+    vendor = get_object_or_404(Vendor, id=vendor_id)
+
+    if request.method == 'POST':
+        try:
+            position = request.POST.get('position')
+            name = request.POST.get('employee_name')
+            phone_number = request.POST.get('phone_number')
+            email = request.POST.get('email')
+            date_of_birth = request.POST.get('date_of_birth')
+
+            if not all([position, name, phone_number, email, date_of_birth]):
+                messages.error(request, 'All fields are required!')
+                return render(request, 'add_vendor_employee.html', {'vendor': vendor})
+
+            VendorEmployee.objects.create(
+                vendor=vendor,
+                position=position,
+                name=name,
+                phone_number=phone_number,
+                email=email,
+                date_of_birth=date_of_birth
+            )
+
+            messages.success(request, f'Employee {name} added successfully!')
+            return redirect('vendor_detail', vendor_id=vendor.id)
+
+        except Exception as e:
+            messages.error(request, f'Error adding employee: {str(e)}')
+            return render(request, 'add_vendor_employee.html', {'vendor': vendor})
+
+    return render(request, 'add_vendor_employee.html', {'vendor': vendor})
+
+def edit_vendor_employee(request, employee_id):
+    """Edit existing vendor employee"""
+    employee = get_object_or_404(VendorEmployee, id=employee_id)
+    vendor_id = employee.vendor.id
+
+    if request.method == 'POST':
+        try:
+            employee.position = request.POST.get('position')
+            employee.name = request.POST.get('employee_name')
+            employee.phone_number = request.POST.get('phone_number')
+            employee.email = request.POST.get('email')
+            employee.date_of_birth = request.POST.get('date_of_birth')
+            employee.save()
+
+            messages.success(request, f'Employee {employee.name} updated successfully!')
+            return redirect('vendor_detail', vendor_id=vendor_id)
+
+        except Exception as e:
+            messages.error(request, f'Error updating employee: {str(e)}')
+
+    return render(request, 'edit_vendor_employee.html', {
+        'employee': employee,
+        'vendor': employee.vendor,
+        'is_edit': True
+    })
+
+def delete_vendor_employee(request, employee_id):
+    """Delete vendor employee"""
+    employee = get_object_or_404(VendorEmployee, id=employee_id)
+    vendor_id = employee.vendor.id
+
+    if request.method == 'POST':
+        try:
+            employee_name = employee.name
+            employee.delete()
+            messages.success(request, f'Employee {employee_name} deleted successfully!')
+            return redirect('vendor_detail', vendor_id=vendor_id)
+        except Exception as e:
+            messages.error(request, f'Error deleting employee: {str(e)}')
+            return redirect('vendor_detail', vendor_id=vendor_id)
+
+    return render(request, 'delete_vendor_employee.html', {'employee': employee})
+
+# Vendor Product Views
+def add_vendor_product(request, vendor_id):
+    vendor = get_object_or_404(Vendor, id=vendor_id)
+    categories = Category.objects.all()
+    
+    if request.method == 'POST':
+        try:
+            product = VendorProduct.objects.create(
+                vendor=vendor,
+                product_id=request.POST.get('product_id'),
+                product_name=request.POST.get('product_name'),
+                selling_price=request.POST.get('selling_price'),
+                purchase_price=request.POST.get('purchase_price') or None,
+                tax_percent=request.POST.get('tax_percent') or None,
+                product_unit=request.POST.get('product_unit'),
+                hsn_sac=request.POST.get('hsn_sac'),
+                category_id=request.POST.get('category_id') or None,
+                description=request.POST.get('description'),
+            )
+            
+            if request.FILES.get('product_image'):
+                product.product_image = request.FILES['product_image']
+                product.save()
+            
+            messages.success(request, f'Product "{product.product_name}" added successfully!')
+            return redirect('vendor_detail', vendor_id=vendor.id)
+        except Exception as e:
+            messages.error(request, f'Error adding product: {str(e)}')
+    
+    context = {
+        'vendor': vendor,
+        'categories': categories,
+    }
+    return render(request, 'add_vendor_product.html', context)
+
+def edit_vendor_product(request, product_id):
+    product = get_object_or_404(VendorProduct, id=product_id)
+    vendor = product.vendor
+    categories = Category.objects.all()
+    
+    if request.method == 'POST':
+        try:
+            product.product_id = request.POST.get('product_id')
+            product.product_name = request.POST.get('product_name')
+            product.selling_price = request.POST.get('selling_price')
+            product.purchase_price = request.POST.get('purchase_price') or None
+            product.tax_percent = request.POST.get('tax_percent') or None
+            product.product_unit = request.POST.get('product_unit')
+            product.hsn_sac = request.POST.get('hsn_sac')
+            product.category_id = request.POST.get('category_id') or None
+            product.description = request.POST.get('description')
+            
+            if request.FILES.get('product_image'):
+                product.product_image = request.FILES['product_image']
+            
+            product.save()
+            messages.success(request, f'Product "{product.product_name}" updated successfully!')
+            return redirect('vendor_detail', vendor_id=vendor.id)
+        except Exception as e:
+            messages.error(request, f'Error updating product: {str(e)}')
+    
+    context = {
+        'vendor': vendor,
+        'product': product,
+        'categories': categories,
+    }
+    return render(request, 'edit_vendor_product.html', context)
+
+def delete_vendor_product(request, product_id):
+    product = get_object_or_404(VendorProduct, id=product_id)
+    vendor_id = product.vendor.id
+    product_name = product.product_name
+    
+    if product.product_image:
+        if os.path.isfile(product.product_image.path):
+            os.remove(product.product_image.path)
+    
+    product.delete()
+    messages.success(request, f'Product "{product_name}" deleted successfully!')
+    return redirect('vendor_detail', vendor_id=vendor_id)
