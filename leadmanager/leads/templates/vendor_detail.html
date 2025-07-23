@@ -104,8 +104,7 @@
         </div>
     </div>
 
-    <!-- Vendor Employees -->
-     <!-- Employees -->
+    <!-- Employees -->
     <div class="card my-3 my-md-4">
         <div class="card-header d-flex justify-content-between align-items-center bg-light fw-bold">
             <span><i class="fas fa-users me-2"></i>Employees</span>
@@ -146,7 +145,7 @@
                                         {% endif %}
                                     </div>
                                 </div>
-                                 <div class="employee-actions">
+                                <div class="employee-actions">
                                     <a href="{% url 'edit_vendor_employee' employee.id %}" class="btn btn-sm btn-outline-primary action-btn" title="Edit Employee">
                                         <i class="fas fa-edit"></i>
                                     </a>
@@ -188,163 +187,117 @@
         </div>
     </div>
 
-
-<!-- Replace the Products Supplied section in your template with this fixed version -->
-<div class="card my-3 my-md-4">
-    <div class="card-header d-flex justify-content-between align-items-center bg-light fw-bold">
-        <span><i class="fas fa-boxes me-2"></i>Products Supplied</span>
-        <a href="{% url 'add_vendor_product' vendor.id %}" class="btn btn-sm btn-primary rounded-pill btn-mobile">
-            <i class="fas fa-plus"></i>
-            <span class="d-none d-sm-inline ms-1">Add Product</span>
-        </a>
-    </div>
-    <div class="card-body">
-        {% if vendor_products %}
-            <div class="row g-2 g-md-3">
-                {% for product in vendor_products %}
-                <div class="col-12 col-md-6 col-xl-4">
-                    <div class="product-card">
-                        <div class="d-flex justify-content-between align-items-start mb-2">
-                            <div class="product-info flex-grow-1">
-                                {% if product.product_image %}
-                                    <img src="{{ product.product_image.url }}" alt="{{ product.product_name }}" class="product-image mb-2">
-                                {% endif %}
-                                <h6 class="mb-1 fw-bold text-primary">{{ product.product_name }}</h6>
-                                <div class="product-details">
-                                    <!-- Product ID - check if field exists -->
-                                    {% if product.product_id %}
-                                    <div class="detail-row">
-                                        <i class="fas fa-tag me-2 text-muted"></i>
-                                        <span class="fw-medium">{{ product.product_id }}</span>
-                                    </div>
+    <!-- Products Supplied -->
+    <div class="card my-3 my-md-4">
+        <div class="card-header d-flex justify-content-between align-items-center bg-light fw-bold">
+            <span><i class="fas fa-boxes me-2"></i>Products Supplied</span>
+            <a href="{% url 'add_vendor_product' vendor.id %}" class="btn btn-sm btn-primary rounded-pill btn-mobile">
+                <i class="fas fa-plus"></i>
+                <span class="d-none d-sm-inline ms-1">Add Product</span>
+            </a>
+        </div>
+        <div class="card-body">
+            {% if vendor_products %}
+                <div class="row g-2 g-md-3">
+                    {% for product in vendor_products %}
+                    <div class="col-12 col-md-6 col-xl-4">
+                        <div class="product-card">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <div class="product-info flex-grow-1">
+                                    {% if product.product_image %}
+                                        <img src="{{ product.product_image.url }}" alt="{{ product.product_name }}" class="product-image mb-2">
                                     {% endif %}
-                                    
-                                    <!-- Price - check if field exists -->
-                                    {% if product.purchase_price %}
-                                    <div class="detail-row">
-                                        <i class="fas fa-rupee-sign me-2 text-muted"></i>
-                                        <span>₹{{ product.purchase_price }}</span>
+                                    <h6 class="mb-1 fw-bold text-primary">{{ product.product_name }}</h6>
+                                    <div class="product-details">
+                                        <div class="detail-row">
+                                            <i class="fas fa-tag me-2 text-muted"></i>
+                                            <span class="fw-medium">{{ product.product_id }}</span>
+                                        </div>
+                                        {% if product.purchase_price %}
+                                        <div class="detail-row">
+                                            <i class="fas fa-rupee-sign me-2 text-muted"></i>
+                                            <span>₹{{ product.purchase_price }}</span>
+                                        </div>
+                                        {% endif %}
+                                        {% if product.selling_price %}
+                                        <div class="detail-row">
+                                            <i class="fas fa-tags me-2 text-muted"></i>
+                                            <span>Selling: ₹{{ product.selling_price }}</span>
+                                        </div>
+                                        {% endif %}
+                                        {% if product.installation_date %}
+                                        <div class="detail-row">
+                                            <i class="fas fa-calendar-alt me-2 text-muted"></i>
+                                            <span>{{ product.installation_date|date:"d-M-Y" }}</span>
+                                        </div>
+                                        {% endif %}
+                                        {% if product.warranty_period_date %}
+                                        <div class="detail-row">
+                                            <i class="fas fa-calendar-check me-2 text-muted"></i>
+                                            <span>{{ product.warranty_period_date|date:"d-M-Y" }}</span>
+                                        </div>
+                                        {% endif %}
+                                        {% if product.category %}
+                                        <div class="detail-row">
+                                            <i class="fas fa-folder me-2 text-muted"></i>
+                                            <span>{{ product.category.name }}</span>
+                                        </div>
+                                        {% endif %}
+                                        {% if product.product_unit %}
+                                        <div class="detail-row">
+                                            <i class="fas fa-weight me-2 text-muted"></i>
+                                            <span>{{ product.get_product_unit_display }}</span>
+                                        </div>
+                                        {% endif %}
+                                        {% if product.manufacturer %}
+                                        <div class="detail-row">
+                                            <i class="fas fa-industry me-2 text-muted"></i>
+                                            <span>{{ product.manufacturer }}</span>
+                                        </div>
+                                        {% endif %}
+                                        {% if product.serial_number %}
+                                        <div class="detail-row">
+                                            <i class="fas fa-barcode me-2 text-muted"></i>
+                                            <span>S/N: {{ product.serial_number }}</span>
+                                        </div>
+                                        {% endif %}
+                                        {% if product.hsn_sac %}
+                                        <div class="detail-row">
+                                            <i class="fas fa-code me-2 text-muted"></i>
+                                            <span>HSN: {{ product.hsn_sac }}</span>
+                                        </div>
+                                        {% endif %}
                                     </div>
-                                    {% endif %}
-                                    
-                                    <!-- Installation Date - check if field exists and not null -->
-                                    {% if product.installation_date %}
-                                    <div class="detail-row">
-                                        <i class="fas fa-calendar-alt me-2 text-muted"></i>
-                                        <span>{{ product.installation_date|date:"d-M-Y" }}</span>
-                                    </div>
-                                    {% endif %}
-                                    
-                                    <!-- Warranty Period - check if field exists and not null -->
-                                    {% if product.warranty_period_date %}
-                                    <div class="detail-row">
-                                        <i class="fas fa-calendar-check me-2 text-muted"></i>
-                                        <span>{{ product.warranty_period_date|date:"d-M-Y" }}</span>
-                                    </div>
-                                    {% endif %}
-                                    
-                                    <!-- Warranty Period (if it's a duration field) -->
-                                    {% if product.warranty_period %}
-                                    <div class="detail-row">
-                                        <i class="fas fa-shield-alt me-2 text-muted"></i>
-                                        <span>{{ product.warranty_period }} months</span>
-                                    </div>
-                                    {% endif %}
-                                    
-                                    <!-- Category -->
-                                    {% if product.category %}
-                                    <div class="detail-row">
-                                        <i class="fas fa-folder me-2 text-muted"></i>
-                                        <span>{{ product.category.name }}</span>
-                                    </div>
-                                    {% endif %}
-                                    
-                                    <!-- Product Unit -->
-                                    {% if product.product_unit %}
-                                    <div class="detail-row">
-                                        <i class="fas fa-weight me-2 text-muted"></i>
-                                        <span>{{ product.get_product_unit_display|default:product.product_unit }}</span>
-                                    </div>
-                                    {% endif %}
-                                    
-                                    <!-- Quantity (if available) -->
-                                    {% if product.quantity %}
-                                    <div class="detail-row">
-                                        <i class="fas fa-cubes me-2 text-muted"></i>
-                                        <span>Qty: {{ product.quantity }}</span>
-                                    </div>
-                                    {% endif %}
-                                    
-                                    <!-- Installation Date -->
-                                    {% if product.installation_date %}
-                                    <div class="detail-row">
-                                        <i class="fas fa-calendar-alt me-2 text-muted"></i>
-                                        <span class="text-success">Installed: {{ product.installation_date|date:"d-M-Y" }}</span>
-                                    </div>
-                                    {% endif %}
-                                    
-                                    <!-- Warranty Date -->
-                                    {% if product.warranty_period_date %}
-                                    <div class="detail-row">
-                                        <i class="fas fa-shield-alt me-2 text-muted"></i>
-                                        <span class="text-warning">Warranty: {{ product.warranty_period_date|date:"d-M-Y" }}</span>
-                                    </div>
-                                    {% endif %}
+                                </div>
+                                <div class="product-actions">
+                                    <button class="btn btn-sm btn-outline-warning me-1" onclick="editProduct('{{ product.id }}')">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger" onclick="deleteProduct('{{ product.id }}', '{{ product.product_name }}')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
                                 </div>
                             </div>
-                            <div class="product-actions">
-                                <button class="btn btn-sm btn-outline-warning me-1" onclick="editProduct('{{ product.id }}')">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button class="btn btn-sm btn-outline-danger" onclick="deleteProduct('{{ product.id }}', '{{ product.product_name }}')">
-                                    <i class="fas fa-trash"></i>
-                                </button>
+                            {% if product.description %}
+                            <div class="product-description">
+                                <small class="text-muted">{{ product.description|truncatechars:100 }}</small>
                             </div>
+                            {% endif %}
                         </div>
-                        {% if product.description %}
-                        <div class="product-description">
-                            <small class="text-muted">{{ product.description|truncatechars:100 }}</small>
-                        </div>
-                        {% endif %}
                     </div>
+                    {% endfor %}
                 </div>
-                {% endfor %}
-            </div>
-            
-            <!-- Debug info - Remove this after fixing -->
-            {% if settings.DEBUG %}
-            <div class="mt-3 p-3 bg-light border rounded">
-                <h6>Debug Info (remove in production):</h6>
-                <p><strong>Product count:</strong> {{ vendor_products|length }}</p>
-                {% if vendor_products %}
-                    {% with product=vendor_products.0 %}
-                    <p><strong>First product fields:</strong></p>
-                    <ul class="list-unstyled small">
-                        <li>product_name: {{ product.product_name|default:"Not set" }}</li>
-                        <li>product_id: {{ product.product_id|default:"Not set" }}</li>
-                        <li>purchase_price: {{ product.purchase_price|default:"Not set" }}</li>
-                        <li>installation_date: {{ product.installation_date|default:"Not set" }}</li>
-                        <li>warranty_period_date: {{ product.warranty_period_date|default:"Not set" }}</li>
-                        <li>category: {{ product.category|default:"Not set" }}</li>
-                        <li>product_unit: {{ product.product_unit|default:"Not set" }}</li>
-                        <li>description: {{ product.description|default:"Not set" }}</li>
-                    </ul>
-                    {% endwith %}
-                {% endif %}
-            </div>
+            {% else %}
+                <div class="text-center py-4">
+                    <i class="fas fa-box-open fa-3x text-muted mb-3"></i>
+                    <p class="text-muted mb-3">No products added yet</p>
+                    <a href="{% url 'add_vendor_product' vendor.id %}" class="btn btn-warning">
+                        <i class="fas fa-plus me-2"></i>Add First Product
+                    </a>
+                </div>
             {% endif %}
-            
-        {% else %}
-            <div class="text-center py-4">
-                <i class="fas fa-box-open fa-3x text-muted mb-3"></i>
-                <p class="text-muted mb-3">No products added yet</p>
-                <a href="{% url 'add_vendor_product' vendor.id %}" class="btn btn-warning">
-                    <i class="fas fa-plus me-2"></i>Add First Product
-                </a>
-            </div>
-        {% endif %}
+        </div>
     </div>
-</div>
 
     <!-- Back Button -->
     <div class="text-center d-md-none mb-3">
@@ -371,6 +324,18 @@
             window.location.href = `/vendors/product/delete/${productId}/`;
         }
     }
+
+    function callEmployee(phoneNumber) {
+        window.open(`tel:${phoneNumber}`, '_self');
+    }
+
+    function whatsappEmployee(phoneNumber) {
+        window.open(`https://wa.me/${phoneNumber}`, '_blank');
+    }
+
+    function emailEmployee(email) {
+        window.open(`mailto:${email}`, '_self');
+    }
 </script>
 
 <style>
@@ -396,9 +361,9 @@
     font-size: 0.9rem;
 }
 
-.product-card {
-    background: linear-gradient(135deg, #fff8e1 0%, #ffeaa7 100%);
-    border: 1px solid #f8f8f8;
+.employee-card {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border: 1px solid #dee2e6;
     border-radius: 12px;
     padding: 16px;
     transition: all 0.3s ease;
@@ -406,20 +371,12 @@
     position: relative;
 }
 
-.product-card:hover {
+.employee-card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(227, 224, 220, 0.2);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
-.product-image {
-    width: 100%;
-    height: 120px;
-    object-fit: cover;
-    border-radius: 8px;
-    border: 2px solid #f39c12;
-}
-
-.product-details {
+.employee-details {
     display: grid;
     gap: 8px;
     margin-top: 8px;
@@ -436,7 +393,7 @@
     font-size: 0.8rem;
 }
 
-.product-actions {
+.employee-actions {
     display: flex;
     flex-shrink: 0;
     position: absolute;
@@ -445,20 +402,6 @@
     gap: 4px;
 }
 
-.product-description {
-    margin-top: 10px;
-    padding-top: 10px;
-    border-top: 1px solid #f39c12;
-}
-
-/* .employee-actions {
-    display: flex;
-    flex-shrink: 0;
-    position:absolute;
-    top: 8px;
-    right: 8px;
-    gap: 4px;
-} */
 .employee-contact-buttons {
     display: flex;
     gap: 8px;
@@ -498,6 +441,49 @@
     box-shadow: 0 4px 8px rgba(0,0,0,0.2);
 }
 
+.product-card {
+    background: linear-gradient(135deg, #fff8e1 0%, #ffeaa7 100%);
+    border: 1px solid #f8f8f8;
+    border-radius: 12px;
+    padding: 16px;
+    transition: all 0.3s ease;
+    height: 100%;
+    position: relative;
+}
+
+.product-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(227, 224, 220, 0.2);
+}
+
+.product-image {
+    width: 100%;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 2px solid #f39c12;
+}
+
+.product-details {
+    display: grid;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.product-actions {
+    display: flex;
+    flex-shrink: 0;
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    gap: 4px;
+}
+
+.product-description {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid #f39c12;
+}
 
 /* Tablet and desktop styles */
 @media (min-width: 768px) {
@@ -516,7 +502,7 @@
         flex-shrink: 0;
     }
     
-    .product-card {
+    .employee-card, .product-card {
         padding: 20px;
     }
     
@@ -526,7 +512,7 @@
 }
 
 @media (min-width: 992px) {
-    .product-details {
+    .employee-details, .product-details {
         grid-template-columns: 1fr 1fr;
         gap: 12px 16px;
     }
@@ -534,7 +520,7 @@
 
 /* Print styles */
 @media print {
-    .btn, .product-actions {
+    .btn, .employee-actions, .employee-contact-buttons, .product-actions {
         display: none !important;
     }
     

@@ -290,8 +290,19 @@ class VendorEmployee(models.Model):
 
     class Meta:
         ordering = ['-created_at']
-
+        
 class VendorProduct(models.Model):
+    UNIT_CHOICES = [
+        ('pcs', 'Pieces'),
+        ('kg', 'Kilograms'),
+        ('meter', 'Meters'),
+        ('liter', 'Liters'),
+        ('box', 'Box'),
+        ('set', 'Set'),
+        ('roll', 'Roll'),
+        ('packet', 'Packet'),
+    ]
+    
     vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE, related_name='products')
     product_id = models.CharField(max_length=100)
     product_name = models.CharField(max_length=200)
@@ -302,16 +313,19 @@ class VendorProduct(models.Model):
     selling_price = models.DecimalField(max_digits=10, decimal_places=2)
     purchase_price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     tax_percent = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True)
-    product_unit = models.CharField(max_length=50)
+    product_unit = models.CharField(max_length=50, choices=UNIT_CHOICES, default='pcs')
     hsn_sac = models.CharField(max_length=20)
-    category_id = models.CharField(max_length=100, blank=True, null=True)
+    category = models.ForeignKey('Category', on_delete=models.SET_NULL, null=True, blank=True)
     description = models.TextField(blank=True, null=True)
     product_image = models.ImageField(upload_to='vendor_products/', blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-
+    
     def __str__(self):
         return f"{self.product_name} - {self.vendor.vendor_name}"
-
+    
+    def get_product_unit_display(self):
+        return dict(self.UNIT_CHOICES).get(self.product_unit, self.product_unit)
+    
     class Meta:
         ordering = ['-created_at']

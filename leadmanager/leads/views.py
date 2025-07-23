@@ -1029,6 +1029,7 @@ def delete_vendor_employee(request, employee_id):
     return render(request, 'delete_vendor_employee.html', {'employee': employee})
 
 # Vendor Product Views
+
 def add_vendor_product(request, vendor_id):
     vendor = get_object_or_404(Vendor, id=vendor_id)
     categories = Category.objects.all()
@@ -1043,11 +1044,13 @@ def add_vendor_product(request, vendor_id):
                 purchase_price=request.POST.get('purchase_price') or None,
                 tax_percent=request.POST.get('tax_percent') or None,
                 product_unit=request.POST.get('product_unit'),
-                warrenty_period_date=request.POST.get('warranty_period_date') or None,
+                warranty_period_date=request.POST.get('warranty_period_date') or None,
                 installation_date=request.POST.get('installation_date') or None,
                 hsn_sac=request.POST.get('hsn_sac'),
                 category_id=request.POST.get('category_id') or None,
                 description=request.POST.get('description'),
+                manufacturer=request.POST.get('manufacturer'),
+                serial_number=request.POST.get('serial_number'),
             )
             
             if request.FILES.get('product_image'):
@@ -1083,6 +1086,8 @@ def edit_vendor_product(request, product_id):
             product.hsn_sac = request.POST.get('hsn_sac')
             product.category_id = request.POST.get('category_id') or None
             product.description = request.POST.get('description')
+            product.manufacturer = request.POST.get('manufacturer')
+            product.serial_number = request.POST.get('serial_number')
             
             if request.FILES.get('product_image'):
                 product.product_image = request.FILES['product_image']
