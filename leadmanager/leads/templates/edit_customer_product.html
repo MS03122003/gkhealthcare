@@ -34,6 +34,23 @@
                         <input type="text" name="product_name" id="product_name" class="form-control" value="{{ product.product_name }}" required>
                     </div>
                 </div>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="manufacturer" class="form-label">Manufacturer</label>
+                        <select name="manufacturer" id="manufacturer" class="form-select mt-2">
+                            <option value="">Select Manufacturer</option>
+                            <option value="NK health care" {% if product.manufacturer == 'NK health care' %}selected{% endif %}>NK Health Care</option>
+                            <option value="Fresenius Medical Care" {% if product.manufacturer == 'Fresenius Medical Care' %}selected{% endif %}>Fresenius Medical Care</option>
+                            <option value="MaxLife" {% if product.manufacturer == 'MaxLife' %}selected{% endif %}>MaxLife</option>
+                            <option value="amvin aqua" {% if product.manufacturer == 'amvin aqua' %}selected{% endif %}>Amvin Aqua</option>
+                            <option value="GK health care" {% if product.manufacturer == 'GK health care' %}selected{% endif %}>GK Health Care</option>
+                            <option value="Other" {% if product.manufacturer == 'Other' %}selected{% endif %}>Other</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="serial_number" class="form-label">Serial Number</label>
+                        <input type="text" name="serial_number" id="serial_number" class="form-control" value="{{ product.serial_number }}" required>
+                    </div>
 
                 <div class="row mb-3">
                     <div class="col-md-6">
@@ -87,6 +104,16 @@
                                 <option value="{{ category.id }}" {% if product.category_id == category.id %}selected{% endif %}>{{ category.name }}</option>
                             {% endfor %}
                         </select>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="installation_date" class="form-label">Installation Date</label>
+                        <input type="date" name="installation_date" id="installation_date" class="form-control" value="{{ product.installation_date }}">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="warranty_period_date" class="form-label">Warranty Period End Date</label>
+                        <input type="date" name="warranty_period_date" id="warranty_period_date" class="form-control" value="{{ product.warranty_period_date }}">
                     </div>
                 </div>
 

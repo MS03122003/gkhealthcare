@@ -736,8 +736,12 @@ def add_customer_product(request, customer_id):
            customer=customer,
            product_id=request.POST.get('product_id'),
            product_name=request.POST.get('product_name'),
+           manufacturer=request.POST.get('manufacturer') or None,
+           serial_number=request.POST.get('serial_number') or None,
            selling_price=request.POST.get('selling_price'),
            purchase_price=request.POST.get('purchase_price') or None,
+           installation_date=request.POST.get('installation_date') or None,
+           warranty_period_date=request.POST.get('warranty_period_date') or None,
            tax_percent=request.POST.get('tax_percent') or None,
            product_unit=request.POST.get('product_unit'),
            hsn_sac=request.POST.get('hsn_sac'),
@@ -768,6 +772,10 @@ def edit_customer_product(request, product_id):
        # Update product fields
        product.product_id = request.POST.get('product_id')
        product.product_name = request.POST.get('product_name')
+       product.manufacturer = request.POST.get('manufacturer') or None
+       product.serial_number = request.POST.get('serial_number') or None
+       product.installation_date = request.POST.get('installation_date') or None
+       product.warranty_period_date = request.POST.get('warranty_period_date') or None
        product.selling_price = request.POST.get('selling_price')
        product.purchase_price = request.POST.get('purchase_price') or None
        product.tax_percent = request.POST.get('tax_percent') or None
@@ -1035,6 +1043,8 @@ def add_vendor_product(request, vendor_id):
                 purchase_price=request.POST.get('purchase_price') or None,
                 tax_percent=request.POST.get('tax_percent') or None,
                 product_unit=request.POST.get('product_unit'),
+                warrenty_period_date=request.POST.get('warranty_period_date') or None,
+                installation_date=request.POST.get('installation_date') or None,
                 hsn_sac=request.POST.get('hsn_sac'),
                 category_id=request.POST.get('category_id') or None,
                 description=request.POST.get('description'),
@@ -1065,6 +1075,8 @@ def edit_vendor_product(request, product_id):
             product.product_id = request.POST.get('product_id')
             product.product_name = request.POST.get('product_name')
             product.selling_price = request.POST.get('selling_price')
+            product.installation_date = request.POST.get('installation_date') or None
+            product.warranty_period_date = request.POST.get('warranty_period_date') or None
             product.purchase_price = request.POST.get('purchase_price') or None
             product.tax_percent = request.POST.get('tax_percent') or None
             product.product_unit = request.POST.get('product_unit')

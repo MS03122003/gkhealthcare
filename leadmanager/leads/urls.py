@@ -46,18 +46,18 @@ urlpatterns = [
     path('vendor_list/', views.vendor_list, name='vendor_list'),
     path('vendor_detail/<int:vendor_id>/', views.vendor_detail, name='vendor_detail'),
     path('edit_vendor/<int:vendor_id>/', views.edit_vendor, name='edit_vendor'),
-    path('delete_vendor/<int:vendor_id>/', views.delete_vendor, name='delete_vendor'),
-    
+    path('vendors/delete/<int:vendor_id>/', views.delete_vendor, name='delete_vendor'),
+
     # Vendor Employee URLs
     path('add_vendor_employee/<int:vendor_id>/', views.add_vendor_employee, name='add_vendor_employee'),
     path('edit_vendor_employee/<int:employee_id>/', views.edit_vendor_employee, name='edit_vendor_employee'),
     path('delete_vendor_employee/<int:employee_id>/', views.delete_vendor_employee, name='delete_vendor_employee'),
     
-    # Vendor Product URLs
-    path('add_vendor_product/<int:vendor_id>/', views.add_vendor_product, name='add_vendor_product'),
-    path('edit_vendor_product/<int:product_id>/', views.edit_vendor_product, name='edit_vendor_product'),
-    path('delete_vendor_product/<int:product_id>/', views.delete_vendor_product, name='delete_vendor_product'),
-
-    
+  
+# With these updated lines:
+    path('vendors/<int:vendor_id>/add-product/', views.add_vendor_product, name='add_vendor_product'),
+    path('vendors/product/edit/<int:product_id>/', views.edit_vendor_product, name='edit_vendor_product'),
+    path('vendors/product/delete/<int:product_id>/', views.delete_vendor_product, name='delete_vendor_product'),
+        
 
 ]

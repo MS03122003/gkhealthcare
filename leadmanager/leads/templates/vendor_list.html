@@ -1,0 +1,495 @@
+{% extends "base.html" %}
+
+{% block title %}Vendors - LeadMaster Pro{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h1 class="page-title">
+                <i class="fas fa-truck me-2"></i>Vendors
+                <span class="badge bg-warning text-dark ms-2">{{ total_vendors }}</span>
+            </h1>
+            <nav aria-label="breadcrumb" class="d-none d-md-block">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'dashboard' %}"><i class="fas fa-home"></i></a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Vendors</li>
+                </ol>
+            </nav>
+        </div>
+        <div>
+            <a href="{% url 'add_vendor' %}" class="btn btn-warning">
+                <i class="fas fa-plus me-2 d-none d-sm-inline"></i>
+                <span class="d-none d-sm-inline">Add Vendor</span>
+                <i class="fas fa-plus d-sm-none"></i>
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Display Messages -->
+<!-- {% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            <i class="fas {% if message.tags == 'success' %}fa-check-circle{% else %}fa-exclamation-triangle{% endif %} me-2"></i>
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    {% endfor %}
+{% endif %} -->
+
+<!-- Search and Filter Section -->
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="get" class="row g-3">
+            <!-- Mobile Search -->
+            <div class="col-12 d-md-none">
+                <label for="search-mobile" class="form-label">Search Vendors</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-search"></i></span>
+                    <input type="text" class="form-control" id="search-mobile" name="search" 
+                           value="{{ search_query }}" placeholder="Search vendors...">
+                </div>
+            </div>
+            
+            <!-- Mobile Filters -->
+            <div class="col-6 d-md-none">
+                <label for="state-mobile" class="form-label">State</label>
+                <select class="form-select" id="state-mobile" name="state">
+                    <option value="">All States</option>
+                    {% for state in states %}
+                        <option value="{{ state }}" {% if state == state_filter %}selected{% endif %}>{{ state }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-6 d-md-none">
+                <label for="city-mobile" class="form-label">City</label>
+                <select class="form-select" id="city-mobile" name="city">
+                    <option value="">All Cities</option>
+                    {% for city in cities %}
+                        <option value="{{ city }}" {% if city == city_filter %}selected{% endif %}>{{ city }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Desktop Search and Filters -->
+            <div class="col-md-4 d-none d-md-block">
+                <label for="search" class="form-label">Search Vendors</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-search"></i></span>
+                    <input type="text" class="form-control" id="search" name="search" 
+                           value="{{ search_query }}" placeholder="Search by name, company, phone...">
+                </div>
+            </div>
+            <div class="col-md-3 d-none d-md-block">
+                <label for="state" class="form-label">Filter by State</label>
+                <select class="form-select" id="state" name="state">
+                    <option value="">All States</option>
+                    {% for state in states %}
+                        <option value="{{ state }}" {% if state == state_filter %}selected{% endif %}>{{ state }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3 d-none d-md-block">
+                <label for="city" class="form-label">Filter by City</label>
+                <select class="form-select" id="city" name="city">
+                    <option value="">All Cities</option>
+                    {% for city in cities %}
+                        <option value="{{ city }}" {% if city == city_filter %}selected{% endif %}>{{ city }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-12 col-md-2">
+                <label class="form-label d-none d-md-block">&nbsp;</label>
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-outline-warning">
+                        <i class="fas fa-filter me-1"></i>Filter
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Vendors List -->
+<div class="card">
+    <div class="card-header">
+        <h5 class="card-title mb-0">Vendor List</h5>
+    </div>
+    <div class="card-body p-0">
+        {% if vendors %}
+            <!-- Desktop Table View -->
+            <div class="table-responsive d-none d-lg-block">
+                <table class="table table-hover table-striped mb-0">
+                    <thead class="bg-light">
+                        <tr>
+                            <th>Vendor</th>
+                            <th>Company</th>
+                            <th>Contact</th>
+                            <th>Location</th>
+                            <th>Created</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for vendor in vendors %}
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar-circle me-3">
+                                            {{ vendor.vendor_name|first|upper }}
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-0">{{ vendor.vendor_name }}</h6>
+                                            {% if vendor.email %}
+                                                <small class="text-muted">{{ vendor.email }}</small>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    {% if vendor.company_name %}
+                                        <span class="fw-bold">{{ vendor.company_name }}</span>
+                                        {% if vendor.gstin %}
+                                            <br><small class="text-muted">GSTIN: {{ vendor.gstin }}</small>
+                                        {% endif %}
+                                    {% else %}
+                                        <span class="text-muted">Individual</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div>
+                                        <i class="fas fa-phone me-1"></i>{{ vendor.phone_number }}
+                                        {% if vendor.phone_number_2 %}
+                                            <br><i class="fas fa-phone me-1"></i>{{ vendor.phone_number_2 }}
+                                        {% endif %}
+                                    </div>
+                                </td>
+                                <td>
+                                    {% if vendor.city or vendor.state %}
+                                        <div>
+                                            {% if vendor.city %}{{ vendor.city }}{% endif %}
+                                            {% if vendor.city and vendor.state %}, {% endif %}
+                                            {% if vendor.state %}{{ vendor.state }}{% endif %}
+                                        </div>
+                                        {% if vendor.pincode %}
+                                            <small class="text-muted">{{ vendor.pincode }}</small>
+                                        {% endif %}
+                                    {% else %}
+                                        <span class="text-muted">Not specified</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div>{{ vendor.created_at|date:"M d, Y" }}</div>
+                                    <small class="text-muted">{{ vendor.created_at|date:"H:i" }}</small>
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <a href="{% url 'vendor_detail' vendor.id %}" 
+                                           class="btn btn-sm btn-outline-primary" title="View Details">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a href="{% url 'edit_vendor' vendor.id %}" class="btn btn-sm btn-outline-warning" title="Edit">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <button type="button" class="btn btn-sm btn-outline-danger" 
+                                                title="Delete" onclick="confirmDelete('{{ vendor.id }}', '{{ vendor.vendor_name }}')">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Mobile Card View -->
+            <div class="d-lg-none">
+                {% for vendor in vendors %}
+                    <div class="vendor-card border-bottom">
+                        <div class="vendor-header d-flex align-items-center justify-content-between p-3" 
+                             data-bs-toggle="collapse" data-bs-target="#vendor-{{ vendor.id }}" 
+                             aria-expanded="false" style="cursor: pointer;">
+                            <div class="d-flex align-items-center">
+                                <div class="avatar-circle me-3">
+                                    {{ vendor.vendor_name|first|upper }}
+                                </div>
+                                <div>
+                                    <h6 class="mb-0">{{ vendor.vendor_name }}</h6>
+                                    {% if vendor.company_name %}
+                                        <small class="text-muted">{{ vendor.company_name }}</small>
+                                    {% else %}
+                                        <small class="text-muted">Individual</small>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <span class="badge bg-warning text-dark me-2">{{ vendor.id }}</span>
+                                <i class="fas fa-chevron-down toggle-icon"></i>
+                            </div>
+                        </div>
+                        
+                        <div class="collapse" id="vendor-{{ vendor.id }}">
+                            <div class="vendor-details p-3 pt-0">
+                                <div class="row g-2">
+                                    <div class="col-12">
+                                        <div class="detail-item d-flex align-items-center mb-2">
+                                            <i class="fas fa-user text-warning me-2"></i>
+                                            <small class="text-muted me-2">Name:</small>
+                                            <span>{{ vendor.vendor_name }}</span>
+                                        </div>
+                                    </div>
+                                    
+                                    {% if vendor.company_name %}
+                                    <div class="col-12">
+                                        <div class="detail-item d-flex align-items-center mb-2">
+                                            <i class="fas fa-building text-warning me-2"></i>
+                                            <small class="text-muted me-2">Company:</small>
+                                            <span>{{ vendor.company_name }}</span>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                    
+                                    {% if vendor.email %}
+                                    <div class="col-12">
+                                        <div class="detail-item d-flex align-items-center mb-2">
+                                            <i class="fas fa-envelope text-warning me-2"></i>
+                                            <small class="text-muted me-2">Email:</small>
+                                            <span>{{ vendor.email }}</span>
+                                        </div>
+                                    </div>
+                                    {% else %}
+                                    <div class="col-12">
+                                        <div class="detail-item d-flex align-items-center mb-2">
+                                            <i class="fas fa-envelope text-muted me-2"></i>
+                                            <small class="text-muted me-2">Email:</small>
+                                            <span class="text-muted">N/A</span>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                    
+                                    <div class="col-12">
+                                        <div class="detail-item d-flex align-items-center mb-2">
+                                            <i class="fas fa-phone text-warning me-2"></i>
+                                            <small class="text-muted me-2">Phone:</small>
+                                            <span>{{ vendor.phone_number }}</span>
+                                        </div>
+                                    </div>
+                                    
+                                    {% if vendor.phone_number_2 %}
+                                    <div class="col-12">
+                                        <div class="detail-item d-flex align-items-center mb-2">
+                                            <i class="fas fa-phone text-warning me-2"></i>
+                                            <small class="text-muted me-2">Phone 2:</small>
+                                            <span>{{ vendor.phone_number_2 }}</span>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                    
+                                    {% if vendor.gstin %}
+                                    <div class="col-12">
+                                        <div class="detail-item d-flex align-items-center mb-2">
+                                            <i class="fas fa-fingerprint text-warning me-2"></i>
+                                            <small class="text-muted me-2">GSTIN:</small>
+                                            <span>{{ vendor.gstin }}</span>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                    
+                                    <div class="col-12">
+                                        <div class="detail-item d-flex align-items-center mb-2">
+                                            <i class="fas fa-id-card text-warning me-2"></i>
+                                            <small class="text-muted me-2">Vendor ID:</small>
+                                            <span>{{ vendor.id }}</span>
+                                        </div>
+                                    </div>
+                                    
+                                    {% if vendor.city or vendor.state %}
+                                    <div class="col-12">
+                                        <div class="detail-item d-flex align-items-start mb-2">
+                                            <i class="fas fa-map-marker-alt text-warning me-2 mt-1"></i>
+                                            <div>
+                                                <small class="text-muted me-2">Address:</small>
+                                                <div>
+                                                    {% if vendor.city %}{{ vendor.city }}{% endif %}
+                                                    {% if vendor.city and vendor.state %}, {% endif %}
+                                                    {% if vendor.state %}{{ vendor.state }}{% endif %}
+                                                    {% if vendor.pincode %}
+                                                        <br><small class="text-muted">{{ vendor.pincode }}</small>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                
+                                <!-- Action Buttons -->
+                                <div class="d-flex gap-2 mt-3">
+                                    <a href="{% url 'vendor_detail' vendor.id %}" 
+                                       class="btn btn-warning btn-sm flex-fill">
+                                        <i class="fas fa-eye me-1"></i>View Details
+                                    </a>
+                                    <a href="{% url 'edit_vendor' vendor.id %}" 
+                                       class="btn btn-outline-warning btn-sm">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <button type="button" class="btn btn-outline-danger btn-sm" 
+                                            onclick="confirmDelete('{{ vendor.id }}', '{{ vendor.vendor_name }}')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <!-- Pagination -->
+            {% if vendors.has_other_pages %}
+                <div class="card-footer">
+                    <nav aria-label="Vendor pagination">
+                        <ul class="pagination justify-content-center mb-0">
+                            {% if vendors.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ vendors.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if state_filter %}&state={{ state_filter }}{% endif %}{% if city_filter %}&city={{ city_filter }}{% endif %}">
+                                        <i class="fas fa-chevron-left"></i>
+                                    </a>
+                                </li>
+                            {% endif %}
+
+                            {% for num in vendors.paginator.page_range %}
+                                {% if vendors.number == num %}
+                                    <li class="page-item active">
+                                        <span class="page-link">{{ num }}</span>
+                                    </li>
+                                {% elif num > vendors.number|add:-3 and num < vendors.number|add:3 %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ num }}{% if search_query %}&search={{ search_query }}{% endif %}{% if state_filter %}&state={{ state_filter }}{% endif %}{% if city_filter %}&city={{ city_filter }}{% endif %}">
+                                            {{ num }}
+                                        </a>
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+
+                            {% if vendors.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ vendors.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if state_filter %}&state={{ state_filter }}{% endif %}{% if city_filter %}&city={{ city_filter }}{% endif %}">
+                                        <i class="fas fa-chevron-right"></i>
+                                    </a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                </div>
+            {% endif %}
+        {% else %}
+            <div class="p-4">
+                <div class="text-center py-4">
+                    <i class="fas fa-truck fa-3x text-muted mb-3"></i>
+                    <p class="text-muted mb-3">No vendors found</p>
+                    <a href="{% url 'add_vendor' %}" class="btn btn-warning">
+                        <i class="fas fa-plus me-2"></i>Add First Vendor
+                    </a>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Custom Styles -->
+<style>
+    .avatar-circle {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: linear-gradient(45deg, #ffc107, #ff8800);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+        font-size: 16px;
+    }
+    
+    .vendor-card {
+        transition: all 0.3s ease;
+    }
+    
+    .vendor-card:hover {
+        background-color: #f8f9fa;
+    }
+    
+    .vendor-header {
+        transition: background-color 0.2s ease;
+    }
+    
+    .vendor-header:hover {
+        background-color: #e9ecef;
+    }
+    
+    .toggle-icon {
+        transition: transform 0.3s ease;
+    }
+    
+    .vendor-header[aria-expanded="true"] .toggle-icon {
+        transform: rotate(180deg);
+    }
+    
+    .detail-item {
+        font-size: 14px;
+    }
+    
+    .detail-item i {
+        width: 16px;
+        text-align: center;
+    }
+    
+    @media (max-width: 576px) {
+        .page-title {
+            font-size: 1.25rem;
+        }
+        
+        .avatar-circle {
+            width: 35px;
+            height: 35px;
+            font-size: 14px;
+        }
+        
+        .vendor-header h6 {
+            font-size: 14px;
+        }
+        
+        .vendor-header small {
+            font-size: 12px;
+        }
+    }
+</style>
+
+<!-- Delete Confirmation Script -->
+<script>
+    function confirmDelete(vendorId, vendorName) {
+        if (confirm(`Are you sure you want to delete vendor: ${vendorName}?`)) {
+            window.location.href = `/vendors/delete/${vendorId}/`;
+        }
+    }
+    
+    // Handle collapse events to rotate arrow
+    document.addEventListener('DOMContentLoaded', function() {
+        var collapseElements = document.querySelectorAll('.collapse');
+        collapseElements.forEach(function(collapse) {
+            collapse.addEventListener('show.bs.collapse', function() {
+                var header = document.querySelector('[data-bs-target="#' + this.id + '"]');
+                header.setAttribute('aria-expanded', 'true');
+            });
+            
+            collapse.addEventListener('hide.bs.collapse', function() {
+                var header = document.querySelector('[data-bs-target="#' + this.id + '"]');
+                header.setAttribute('aria-expanded', 'false');
+            });
+        });
+    });
+</script>
+
+{% endblock %}

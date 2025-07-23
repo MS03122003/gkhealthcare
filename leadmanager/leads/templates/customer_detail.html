@@ -158,7 +158,7 @@
                                     </form>
                                 </div>
                             </div>
-                            <div class="employee-contact-buttons">
+                           <div class="employee-contact-buttons">
                                 <button class="btn btn-sm contact-btn call-btn" onclick="callEmployee('{{ employee.phone_number }}')">
                                     <i class="fas fa-phone fa-sm"></i>
                                 </button>
@@ -213,9 +213,17 @@
                                             <i class="fas fa-tag me-2 text-muted"></i>
                                             <span class="fw-medium">{{ product.product_id }}</span>
                                         </div>
-                                        <div class="detail-row">
+                                        <!-- <div class="detail-row">
                                             <i class="fas fa-rupee-sign me-2 text-muted"></i>
                                             <span>₹{{ product.selling_price }}</span>
+                                        </div> -->
+                                        <div class="detail-row">
+                                            <i class="fas fa-calendar-alt me-2 text-muted"></i>
+                                            <span>{{ product.installation_date }}</span>
+                                        </div>
+                                        <div class="detail-row">
+                                            <i class="fas fa-calendar-check me-2 text-muted"></i>
+                                            <span>{{ product.warranty_period_date }}</span>
                                         </div>
                                         {% if product.category %}
                                         <div class="detail-row">
