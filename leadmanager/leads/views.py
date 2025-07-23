@@ -647,6 +647,7 @@ def delete_customer(request, customer_id):
     return render(request, 'delete_customer.html', {'customer': customer})
 
 
+
 def add_employee(request, customer_id):
     """Add new employee linked to a customer"""
     customer = get_object_or_404(Customer, id=customer_id)
@@ -828,6 +829,7 @@ def save_vendor(request):
     if request.method == 'POST':
         try:
             vendor = Vendor.objects.create(
+                vendor_id=request.POST.get('vendor_id', '').strip(),
                 company_name=request.POST.get('company_name', '').strip() or None,
                 vendor_name=request.POST.get('vendor_name', '').strip(),
                 phone_number=request.POST.get('phone_number', '').strip(),
@@ -860,6 +862,7 @@ def vendor_list(request):
     search_query = request.GET.get('search', '')
     if search_query:
         vendors = vendors.filter(
+            Q(vendor_id__icontains=search_query) |
             Q(vendor_name__icontains=search_query) |
             Q(company_name__icontains=search_query) |
             Q(phone_number__icontains=search_query) |

@@ -18,6 +18,13 @@
 
     <form method="POST" action="" class="row g-3">
         {% csrf_token %}
+        <div class="col-md-6">
+            <label for="customer_id" class="form-label">
+                <i class="fas fa-id-badge me-1"></i>Customer ID
+            </label>
+            <input type="text" class="form-control" id="customer_id" name="customer_id" value="{{ customer.customer_id }}" placeholder="Enter customer ID" required>
+            <div class="invalid-feedback">Please provide a customer ID.</div>
+        </div>
 
         <div class="col-md-6">
             <label for="customer_name" class="form-label">Customer Name<span class="text-danger">*</span></label>

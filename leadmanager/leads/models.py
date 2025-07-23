@@ -156,7 +156,9 @@ class Parts(models.Model):
 
 class Customer(models.Model):
     # Company Information
+    
     company_name = models.CharField(max_length=200, blank=True, null=True)
+    
     customer_name = models.CharField(max_length=200)
     
     # Contact Information
@@ -253,6 +255,7 @@ class CustomerProduct(models.Model):
     
 
 class Vendor(models.Model):
+    vendor_id = models.CharField(max_length=20, unique=True) 
     company_name = models.CharField(max_length=200, blank=True, null=True)
     vendor_name = models.CharField(max_length=200)
     phone_number = models.CharField(max_length=15)
@@ -290,7 +293,7 @@ class VendorEmployee(models.Model):
 
     class Meta:
         ordering = ['-created_at']
-        
+
 class VendorProduct(models.Model):
     UNIT_CHOICES = [
         ('pcs', 'Pieces'),

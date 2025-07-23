@@ -49,6 +49,14 @@
                                    value="{{ vendor.company_name|default:'' }}" placeholder="Enter company name">
                         </div>
                         <div class="col-md-6">
+                            <label for="vendor_id" class="form-label">
+                                <i class="fas fa-id-badge me-1"></i>Vendor ID
+                            </label>
+                            <input type="text" class="form-control" id="vendor_id" name="vendor_id" 
+                                   value="{{ vendor.vendor_id }}" placeholder="Enter vendor ID" required>
+                            <div class="invalid-feedback">Please provide a vendor ID.</div>
+                        </div>
+                        <div class="col-md-6">
                             <label for="vendor_name" class="form-label">
                                 <i class="fas fa-user me-1"></i>Vendor Name <span class="text-danger">*</span>
                             </label>
