@@ -21,6 +21,11 @@ from .models import Customer
 import datetime
 import os
 
+from .models import Project, Expense, ExpenseCategory
+from .forms import ProjectForm, ExpenseCategoryForm,ExpenseForm
+from django.core.paginator import Paginator
+from django.db.models import Q, Sum
+
 def payment_followup_form(request):
     return render(request, 'payment_followup_form.html')
 
@@ -520,6 +525,7 @@ def save_customer(request):
     if request.method == 'POST':
         try:
             customer = Customer.objects.create(
+                customer_id=request.POST.get('customer_id', '').strip() or None,
                 company_name=request.POST.get('company_name', '').strip() or None,
                 customer_name=request.POST.get('customer_name', '').strip(),
                 phone_number=request.POST.get('phone_number', '').strip(),
@@ -553,6 +559,7 @@ def customer_list(request):
     search_query = request.GET.get('search', '')
     if search_query:
         customers = customers.filter(
+            Q(customer_id__icontains=search_query) |
             Q(customer_name__icontains=search_query) |
             Q(company_name__icontains=search_query) |
             Q(phone_number__icontains=search_query) |
@@ -1120,3 +1127,275 @@ def delete_vendor_product(request, product_id):
     product.delete()
     messages.success(request, f'Product "{product_name}" deleted successfully!')
     return redirect('vendor_detail', vendor_id=vendor_id)
+
+#
+@login_required
+def generate_report(request):
+    """Main reports dashboard view"""
+    return render(request, 'generate_report.html')
+
+@login_required
+def installation_report(request):
+    """Installation reports view"""
+    # Add your installation report logic here
+    context = {
+        'report_type': 'Installation',
+        'title': 'Installation Reports'
+    }
+    return render(request, 'installation_report.html', context)
+
+@login_required
+def service_report(request):
+    """Service reports view"""
+    # Add your service report logic here
+    context = {
+        'report_type': 'Service',
+        'title': 'Service Reports'
+    }
+    return render(request, 'service_report.html', context)
+
+@login_required
+def inspection_report(request):
+    """Inspection reports view"""
+    # Add your inspection report logic here
+    context = {
+        'report_type': 'Inspection',
+        'title': 'Inspection Reports'
+    }
+    return render(request, 'inspection_report.html', context)
+
+@login_required
+def incident_report(request):
+    """Incident reports view"""
+    # Add your incident report logic here
+    context = {
+        'report_type': 'Incident',
+        'title': 'Incident Reports'
+    }
+    return render(request, 'incident_report.html', context)
+
+@login_required
+def quotation_report(request):
+    """Quotation reports view"""
+    # Add your quotation report logic here
+    context = {
+        'report_type': 'Quotation',
+        'title': 'Quotation Reports'
+    }
+    return render(request, 'quotation_report.html', context)
+
+@login_required
+def purchase_order_report(request):
+    """Purchase order reports view"""
+    # Add your purchase order report logic here
+    context = {
+        'report_type': 'Purchase Order',
+        'title': 'Purchase Order Reports'
+    }
+    return render(request, 'purchase_order_report.html', context)
+
+@login_required
+def delivery_challan_report(request):
+    """Delivery challan reports view"""
+    # Add your delivery challan report logic here
+    context = {
+        'report_type': 'Delivery Challan',
+        'title': 'Delivery Challan Reports'
+    }
+    return render(request, 'delivery_challan_report.html', context)
+
+
+@login_required
+def expense_dashboard(request):
+    """Main expense dashboard showing all projects"""
+    try:
+        # Filter projects by current user and active status
+        projects = Project.objects.filter(
+            created_by=request.user, 
+            is_active=True
+        ).order_by('-created_at')
+        
+        # Calculate statistics for each project
+        projects_with_stats = []
+        for project in projects:
+            project.calculated_total = project.total_expense_amount
+            project.calculated_paid = project.paid_expenses
+            project.calculated_pending = project.pending_expenses
+            project.calculated_count = project.expense_count
+            projects_with_stats.append(project)
+        
+        # Overall statistics
+        total_projects = projects.count()
+        total_expenses = sum(p.calculated_total for p in projects_with_stats)
+        total_paid = sum(p.calculated_paid for p in projects_with_stats)
+        total_pending = sum(p.calculated_pending for p in projects_with_stats)
+        
+        context = {
+            'projects': projects_with_stats,
+            'total_projects': total_projects,
+            'total_expenses': total_expenses,
+            'total_paid': total_paid,
+            'total_pending': total_pending,
+        }
+        
+        return render(request, 'expenses/expense_dashboard.html', context)
+        
+    except Exception as e:
+        messages.error(request, f'Error loading dashboard: {str(e)}')
+        return render(request, 'expenses/expense_dashboard.html', {'projects': []})
+
+@login_required
+def add_project(request):
+    if request.method == 'POST':
+        form = ProjectForm(request.POST)
+        if form.is_valid():
+            project = form.save(commit=False)
+            project.created_by = request.user
+            project.save()
+            messages.success(request, 'Project created successfully!')
+            return redirect('expense_dashboard')
+        else:
+            messages.error(request, 'Please correct the errors below.')
+    else:
+        form = ProjectForm()
+
+    return render(request, 'expenses/add_project.html', {'form': form})
+
+
+
+
+@login_required
+def project_detail(request, project_id):
+    """Project detail page showing expenses"""
+    try:
+        project = get_object_or_404(Project, id=project_id, created_by=request.user)
+        expenses = project.expenses.all()
+        
+        # Filter expenses
+        search_query = request.GET.get('search', '')
+        status_filter = request.GET.get('status', '')
+        
+        if search_query:
+            expenses = expenses.filter(
+                Q(description__icontains=search_query) |
+                Q(vendor__icontains=search_query) |
+                Q(expense_number__icontains=search_query)
+            )
+        
+        if status_filter:
+            expenses = expenses.filter(status=status_filter)
+        
+        # Pagination
+        paginator = Paginator(expenses, 10)
+        page_number = request.GET.get('page')
+        expenses = paginator.get_page(page_number)
+        
+        # Calculate totals
+        total_expenses = project.expenses.aggregate(
+            total=Sum('amount'),
+            paid=Sum('amount', filter=Q(status='paid')),
+            pending=Sum('amount', filter=Q(status='pending'))
+        )
+        
+        # Handle None values
+        for key, value in total_expenses.items():
+            if value is None:
+                total_expenses[key] = 0
+        
+        context = {
+            'project': project,
+            'expenses': expenses,
+            'search_query': search_query,
+            'status_filter': status_filter,
+            'total_expenses': total_expenses,
+        }
+        
+        return render(request, 'expenses/project_details.html', context)
+        
+    except Exception as e:
+        messages.error(request, f'Error loading project details: {str(e)}')
+        return redirect('expense_dashboard')
+
+
+@login_required
+def add_expense(request, project_id):
+    """Add expense to a project"""
+    project = get_object_or_404(Project, id=project_id, created_by=request.user)
+    
+    if request.method == 'POST':
+        form = ExpenseForm(request.POST)
+        if form.is_valid():
+            try:
+                expense = form.save(commit=False)
+                expense.project = project
+                expense.created_by = request.user
+                expense.save()
+                messages.success(request, f'Expense "{expense.description[:30]}..." added successfully!')
+                return redirect('project_detail', project_id=project.id)
+            except Exception as e:
+                messages.error(request, f'Error adding expense: {str(e)}')
+        else:
+            messages.error(request, 'Please correct the errors below.')
+    else:
+        form = ExpenseForm()
+    
+    context = {
+        'form': form,
+        'project': project
+    }
+    return render(request, 'expenses/add_expense.html', context)
+
+
+@login_required
+def edit_expense(request, expense_id):
+    """Edit an expense"""
+    expense = get_object_or_404(Expense, id=expense_id, created_by=request.user)
+    
+    if request.method == 'POST':
+        form = ExpenseForm(request.POST, instance=expense)
+        if form.is_valid():
+            try:
+                form.save()
+                messages.success(request, 'Expense updated successfully!')
+                return redirect('project_detail', project_id=expense.project.id)
+            except Exception as e:
+                messages.error(request, f'Error updating expense: {str(e)}')
+        else:
+            messages.error(request, 'Please correct the errors below.')
+    else:
+        form = ExpenseForm(instance=expense)
+    
+    context = {
+        'form': form,
+        'expense': expense,
+        'project': expense.project
+    }
+    return render(request, 'expenses/edit_expense.html', context)
+
+
+@login_required
+def view_expense(request, expense_id):
+    """View expense details"""
+    expense = get_object_or_404(Expense, id=expense_id, created_by=request.user)
+    
+    context = {
+        'expense': expense,
+        'project': expense.project
+    }
+    return render(request, 'expenses/view_expense.html', context)
+
+
+@login_required
+def delete_expense(request, expense_id):
+    """Delete an expense"""
+    expense = get_object_or_404(Expense, id=expense_id, created_by=request.user)
+    project_id = expense.project.id
+    
+    if request.method == 'POST':
+        try:
+            expense.delete()
+            messages.success(request, 'Expense deleted successfully!')
+        except Exception as e:
+            messages.error(request, f'Error deleting expense: {str(e)}')
+    
+    return redirect('project_detail', project_id=project_id)

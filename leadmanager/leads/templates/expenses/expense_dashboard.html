@@ -1,0 +1,290 @@
+{% extends "base.html" %}
+
+{% block title %}Expense Dashboard{% endblock %}
+
+{% block content %}
+<style>
+    :root {
+        --primary-color: #5e72e4;
+        --success-color: #2dce89;
+        --warning-color: #fb6340;
+        --danger-color: #f5365c;
+    }
+
+    body {
+        background-color: #f8f9fe;
+    }
+
+    .dashboard-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        border-radius: 0 0 1rem 1rem;
+    }
+
+    .stats-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .stats-card {
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+        text-align: center;
+        border-left: 4px solid;
+    }
+
+    .stats-card.total { border-left-color: var(--primary-color); }
+    .stats-card.paid { border-left-color: var(--success-color); }
+    .stats-card.pending { border-left-color: var(--warning-color); }
+    .stats-card.projects { border-left-color: var(--danger-color); }
+
+    .stats-number {
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+
+    .stats-label {
+        color: #6c757d;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .projects-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .project-card {
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+        transition: all 0.3s ease;
+        border: 1px solid #e9ecef;
+    }
+
+    .project-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    }
+
+    .project-header {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        padding: 1.5rem;
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    .project-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 0.5rem;
+    }
+
+    .project-id {
+        color: #6c757d;
+        font-size: 0.9rem;
+    }
+
+    .project-body {
+        padding: 1.5rem;
+    }
+
+    .project-stats {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .stat-item {
+        text-align: center;
+    }
+
+    .stat-value {
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin-Bottom: 0.25rem;
+    }
+
+    .stat-label {
+        font-size: 0.8rem;
+        color: #6c757d;
+        text-transform: uppercase;
+    }
+
+    .project-actions {
+        display: flex;
+        gap: 0.5rem;
+        justify-content: space-between;
+    }
+
+    .btn-project {
+        flex: 1;
+        padding: 0.5rem 1rem;
+        border: none;
+        border-radius: 6px;
+        font-weight: 500;
+        text-decoration: none;
+        text-align: center;
+        transition: all 0.2s ease;
+        font-size: 0.9rem;
+    }
+
+    .btn-view {
+        background: var(--primary-color);
+        color: white;
+    }
+
+    .btn-add {
+        background: var(--success-color);
+        color: white;
+    }
+
+    .btn-project:hover {
+        transform: translateY(-1px);
+        opacity: 0.9;
+        color: white;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 3rem;
+        color: #6c757d;
+    }
+
+    .empty-state-icon {
+        font-size: 4rem;
+        color: #dee2e6;
+        margin-bottom: 1rem;
+    }
+
+    @media (max-width: 768px) {
+        .dashboard-header {
+            padding: 1rem;
+        }
+        
+        .stats-cards {
+            grid-template-columns: 1fr;
+        }
+        
+        .projects-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="dashboard-header">
+    <div class="container-fluid">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="mb-2">
+                    <i class="fas fa-chart-line me-2"></i>
+                    Expense Dashboard
+                </h1>
+                <p class="mb-0 opacity-75">Track and manage your project expenses</p>
+            </div>
+            <a href="{% url 'add_project' %}" class="btn btn-success btn-lg">
+                <i class="fas fa-plus me-2"></i>
+                New Project
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid">
+    <!-- Statistics Cards -->
+    <div class="stats-cards">
+        <div class="stats-card projects">
+            <div class="stats-number" style="color: var(--danger-color);">
+                {{ total_projects }}
+            </div>
+            <div class="stats-label">Total Projects</div>
+        </div>
+        <div class="stats-card total">
+            <div class="stats-number" style="color: var(--primary-color);">
+                ₹{{ total_expenses|default:0|floatformat:2 }}
+            </div>
+            <div class="stats-label">Total Expenses</div>
+        </div>
+        <div class="stats-card paid">
+            <div class="stats-number" style="color: var(--success-color);">
+                ₹{{ total_paid|default:0|floatformat:2 }}
+            </div>
+            <div class="stats-label">Paid Amount</div>
+        </div>
+        <div class="stats-card pending">
+            <div class="stats-number" style="color: var(--warning-color);">
+                ₹{{ total_pending|default:0|floatformat:2 }}
+            </div>
+            <div class="stats-label">Pending Amount</div>
+        </div>
+    </div>
+
+    <!-- Projects Grid -->
+    {% if projects %}
+        <div class="projects-grid">
+            {% for project in projects %}
+                <div class="project-card">
+                    <div class="project-header">
+                        <div class="project-title">{{ project.project_name }}</div>
+                        <div class="project-id">ID: {{ project.project_id }}</div>
+                        <small class="text-muted">
+                            <i class="fas fa-calendar-alt me-1"></i>
+                            Started: {{ project.started_date|date:"M d, Y" }}
+                        </small>
+                    </div>
+                    <div class="project-body">
+                        <div class="project-stats">
+                            <div class="stat-item">
+                                <div class="stat-value" style="color: var(--primary-color);">
+                                    ₹{{ project.calculated_total|floatformat:2 }}
+                                </div>
+                                <div class="stat-label">Total</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value" style="color: var(--success-color);">
+                                    {{ project.calculated_count }}
+                                </div>
+                                <div class="stat-label">Expenses</div>
+                            </div>
+                        </div>
+                        <div class="project-actions">
+                            <a href="{% url 'project_detail' project.id %}" class="btn-project btn-view">
+                                <i class="fas fa-eye me-1"></i>
+                                View Details
+                            </a>
+                            <a href="{% url 'add_expense' project.id %}" class="btn-project btn-add">
+                                <i class="fas fa-plus me-1"></i>
+                                Add Expense
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <div class="empty-state-icon">
+                <i class="fas fa-folder-open"></i>
+            </div>
+            <h4>No Projects Found</h4>
+            <p class="mb-4">Start by creating your first project to track expenses.</p>
+            <a href="{% url 'add_project' %}" class="btn btn-primary btn-lg">
+                <i class="fas fa-plus me-2"></i>
+                Create Your First Project
+            </a>
+        </div>
+    {% endif %}
+</div>
+
+{% endblock %}

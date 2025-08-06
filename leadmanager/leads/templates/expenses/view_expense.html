@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block title %}View Expense - Expense Management{% endblock %}
+
+{% block content %}
+<style>
+  body {
+    background-color: #f8f9fe;
+  }
+  .page-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    border-radius: 0 0 1rem 1rem;
+  }
+  .card {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    padding: 2rem;
+  }
+  .label {
+    font-weight: 600;
+    color: #2c3e50;
+  }
+  .value {
+    margin-bottom: 1rem;
+  }
+  .btn-group {
+    margin-top: 1.5rem;
+  }
+</style>
+
+<div class="page-header">
+  <div class="container-fluid">
+    <h1><i class="fas fa-eye me-2"></i>Expense Details</h1>
+    <p>Project: <strong>{{ expense.project.project_name }}</strong></p>
+  </div>
+</div>
+
+<div class="container-fluid">
+  <div class="row justify-content-center">
+    <div class="col-lg-6 col-md-8">
+      <div class="card">
+        <div><span class="label">Amount:</span> <span class="value">₹{{ expense.amount }}</span></div>
+        <div><span class="label">Expense Date:</span> <span class="value">{{ expense.expense_date|date:"M d, Y" }}</span></div>
+        <div><span class="label">Category:</span> 
+            <span class="value">
+              {% if expense.category %}
+                {{ expense.category.name }}
+              {% else %}
+                Uncategorized
+              {% endif %}
+            </span>
+        </div>
+        <div><span class="label">Vendor:</span> <span class="value">{{ expense.vendor|default:"-" }}</span></div>
+        <div><span class="label">Description:</span> <p class="value">{{ expense.description }}</p></div>
+        <div><span class="label">Notes:</span> <p class="value">{{ expense.notes|default:"-" }}</p></div>
+        <div><span class="label">Payment Type:</span> <span class="value">{{ expense.get_payment_type_display }}</span></div>
+        <div><span class="label">Status:</span> <span class="value text-capitalize">{{ expense.status }}</span></div>
+        <div><span class="label">Created At:</span> <span class="value">{{ expense.created_at|date:"M d, Y, H:i A" }}</span></div>
+
+        <div class="btn-group d-flex gap-2">
+          <a href="{% url 'edit_expense' expense.id %}" class="btn btn-warning flex-fill">
+            <i class="fas fa-edit me-1"></i> Edit
+          </a>
+          <a href="{% url 'project_detail' expense.project.id %}" class="btn btn-secondary flex-fill">
+            <i class="fas fa-arrow-left me-1"></i> Back to Project
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

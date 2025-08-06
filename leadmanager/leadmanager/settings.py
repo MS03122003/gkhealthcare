@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'leads',
     'django_bootstrap5',
+    'widget_tweaks',
 ]
 
 MIDDLEWARE = [

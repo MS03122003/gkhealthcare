@@ -62,6 +62,34 @@ urlpatterns = [
     path('vendors/<int:vendor_id>/add-product/', views.add_vendor_product, name='add_vendor_product'),
     path('vendors/product/edit/<int:product_id>/', views.edit_vendor_product, name='edit_vendor_product'),
     path('vendors/product/delete/<int:product_id>/', views.delete_vendor_product, name='delete_vendor_product'),
-        
+
+    path('reports/', views.generate_report, name='generate_report'),
+    path('reports/installation/', views.installation_report, name='installation_report'),
+    path('reports/service/', views.service_report, name='service_report'),
+    path('reports/inspection/', views.inspection_report, name='inspection_report'),
+    path('reports/incident/', views.incident_report, name='incident_report'),
+    path('reports/quotation/', views.quotation_report, name='quotation_report'),
+    path('reports/purchase-order/', views.purchase_order_report, name='purchase_order_report'),
+    path('reports/delivery-challan/', views.delivery_challan_report, name='delivery_challan_report'),
+
+     path('expenses/', views.expense_dashboard, name='expense_dashboard'),
+     
+    
+    # Project Management
+    path('expenses/add-project/', views.add_project, name='add_project'),
+    path('expenses/project/<int:project_id>/', views.project_detail, name='project_detail'),
+    
+    # Expense Management
+    path('expenses/project/<int:project_id>/add-expense/', views.add_expense, name='add_expense'),
+    path('expenses/edit/<int:expense_id>/', views.edit_expense, name='edit_expense'),
+    path('expenses/view/<int:expense_id>/', views.view_expense, name='view_expense'),
+    path('expenses/delete/<int:expense_id>/', views.delete_expense, name='delete_expense'),
+    
+    # # Category Management
+    # path('expenses/categories/', views.manage_categories, name='manage_categories'),
+    # path('expenses/categories/delete/<int:category_id>/', views.delete_category, name='delete_category'),
+    
+    # # Reports
+    # path('expenses/reports/', views.expense_reports, name='expense_reports'),
 
 ]
