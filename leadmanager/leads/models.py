@@ -474,3 +474,34 @@ class Expense(models.Model):
             self.status = 'pending'
             
         super().save(*args, **kwargs)
+
+
+class HospitalLeadParts(models.Model):
+    """Model to store parts selected for each hospital lead"""
+    hospital_lead = models.ForeignKey(HospitalLead, on_delete=models.CASCADE, related_name='lead_parts')
+    part = models.ForeignKey(Parts, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        unique_together = ('hospital_lead', 'part')  # Prevent duplicate parts for same lead
+        verbose_name = "Hospital Lead Part"
+        verbose_name_plural = "Hospital Lead Parts"
+    
+    def __str__(self):
+        return f"{self.hospital_lead.hospital_name} - {self.part.name}"
+
+
+# Also add a similar model for HospitalLeadProducts if you want to store product selections
+class HospitalLeadProducts(models.Model):
+    """Model to store products selected for each hospital lead"""
+    hospital_lead = models.ForeignKey(HospitalLead, on_delete=models.CASCADE, related_name='lead_products')
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        unique_together = ('hospital_lead', 'product')  # Prevent duplicate products for same lead
+        verbose_name = "Hospital Lead Product"
+        verbose_name_plural = "Hospital Lead Products"
+    
+    def __str__(self):
+        return f"{self.hospital_lead.hospital_name} - {self.product.name}"

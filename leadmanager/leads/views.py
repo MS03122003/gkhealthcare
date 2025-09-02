@@ -5,6 +5,7 @@ from .models import Customer
 from django.core.paginator import Paginator
 from django.db.models import Q
 from django.contrib import messages
+from django.urls import reverse
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
 from django.contrib import messages
@@ -74,138 +75,396 @@ def payment(request):
     return render(request, 'payment.html')
 
 
+# @login_required
+# def new_lead1(request):
+#     if request.method == 'POST':
+#         try:
+#             data = request.POST
+
+#             # List of checkbox options
+#             decision_maker_choices = [
+#                 'Dialysis Technician', 'Nephrologist', 
+#                 'Purchase Department', 'Account Department',
+#                 'Biomedical Department'
+#             ]
+
+#             telecalling_response_choices = [
+#                 'Did not receive', 'Call me later', 'Not interested',
+#                 'Interested in product', 'No more in business', 'Other'
+#             ]
+
+#             # Extract selected checkboxes
+#             decision_maker = [
+#                 choice for choice in decision_maker_choices
+#                 if data.get(f'decision_maker_{choice.lower().replace(" ", "_")}')
+#             ]
+
+#             telecalling_response = [
+#                 choice for choice in telecalling_response_choices
+#                 if data.get(f'telecalling_response_{choice.lower().replace(" ", "_")}')
+#             ]
+
+#             # Create and save the lead
+#             lead = HospitalLead.objects.create(
+#                 hospital_name=data['hospital_name'],
+#                 hospital_type=data['hospital_type'],
+#                 first_name=data['first_name'],
+#                 last_name=data['last_name'],
+#                 phone=data['phone'],
+#                 email=data.get('email'),
+#                 address=data.get('address'),
+#                 city=data.get('city'),
+#                 state=data.get('state'),
+#                 country=data.get('country', 'India'),
+#                 decision_maker=decision_maker,
+#                 telecalling_response=telecalling_response,
+#                 followup_date=data.get('followup_date'),
+#                 followup_time=data.get('followup_time'),
+#                 communication_channel=data.get('communication_channel'),
+#                 promotional_messages=data.get('promotional_messages'),
+#                 remarks=data.get('remarks'),
+#                 created_by=request.user,
+#             )
+
+#             messages.success(request, 'Hospital lead submitted successfully!')
+#             return redirect('new_lead')
+
+#         except Exception as e:
+#             messages.error(request, f'Error submitting form: {str(e)}')
+#             return redirect('new_lead')
+
+#     return render(request, 'new_lead.html')
+
+
+
+
+# def new_lead(request):
+#     # ✅ Get categories grouped by ID
+#     category_ids = Category.objects.values_list('id', flat=True).distinct()
+#     categories = {}
+#     for id in category_ids:
+#         categories[id] = Category.objects.filter(id=id)
+
+#     # ✅ Get all products
+#     products = Product.objects.all()
+
+#     if request.method == 'POST':
+#         try:
+#             data = request.POST
+
+#             # ✅ Handle multiple selected products
+#             products_data = []
+#             for key, value in data.items():
+#                 if key.startswith('products[') and key.endswith('][id]'):
+#                     index = key.split('[')[1].split(']')[0]
+#                     product_id = value
+#                     product_name = data.get(f'products[{index}][name]', '')
+#                     if product_id and product_name:
+#                         products_data.append({
+#                             'id': product_id,
+#                             'name': product_name
+#                         })
+#             print("Received products:", products_data)  # Optional: remove in production
+
+#             # ✅ Handle checkboxes
+#             decision_maker = data.getlist('decision_maker')
+#             telecalling_response = data.getlist('telecalling_response')
+
+#             # ✅ Create lead
+#             lead = HospitalLead.objects.create(
+#                 hospital_name=data.get('hospital_name', '').strip(),
+#                 hospital_type=data.get('hospital_type', '').strip(),
+#                 first_name=data.get('first_name', '').strip(),
+#                 last_name=data.get('last_name', '').strip(),
+#                 phone=data.get('phone', '').strip(),
+#                 email=data.get('email', '').strip(),
+#                 address=data.get('address', '').strip(),
+#                 city=data.get('city', '').strip(),
+#                 state=data.get('state', '').strip(),
+#                 country=data.get('country', 'India').strip(),
+#                 decision_maker=decision_maker,
+#                 telecalling_response=telecalling_response,
+#                 followup_date=data.get('followup_date'),
+#                 followup_time=data.get('followup_time'),
+#                 communication_channel=data.get('communication_channel'),
+#                 promotional_messages=data.get('promotional_messages'),
+#                 remarks=data.get('remarks'),
+#                 created_by=request.user,
+#             )
+
+#             # ✅ Success message
+#             messages.success(request, 'Hospital lead submitted successfully!')
+#             return redirect('new_lead')
+
+#         except Exception as e:
+#             messages.error(request, f'Error submitting form: {str(e)}')
+#             return redirect('new_lead')
+
+#     # ✅ Always pass categories and products for rendering
+#     return render(request, 'new_lead.html', {
+#         'categories': categories,
+#         'products': products
+#     })
+
+# Add this to your views.py file
+
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from .models import HospitalLead, HospitalLeadParts, HospitalLeadProducts, Category, Product, Parts
+import json
+
 @login_required
-def new_lead1(request):
-    if request.method == 'POST':
-        try:
-            data = request.POST
-
-            # List of checkbox options
-            decision_maker_choices = [
-                'Dialysis Technician', 'Nephrologist', 
-                'Purchase Department', 'Account Department',
-                'Biomedical Department'
-            ]
-
-            telecalling_response_choices = [
-                'Did not receive', 'Call me later', 'Not interested',
-                'Interested in product', 'No more in business', 'Other'
-            ]
-
-            # Extract selected checkboxes
-            decision_maker = [
-                choice for choice in decision_maker_choices
-                if data.get(f'decision_maker_{choice.lower().replace(" ", "_")}')
-            ]
-
-            telecalling_response = [
-                choice for choice in telecalling_response_choices
-                if data.get(f'telecalling_response_{choice.lower().replace(" ", "_")}')
-            ]
-
-            # Create and save the lead
-            lead = HospitalLead.objects.create(
-                hospital_name=data['hospital_name'],
-                hospital_type=data['hospital_type'],
-                first_name=data['first_name'],
-                last_name=data['last_name'],
-                phone=data['phone'],
-                email=data.get('email'),
-                address=data.get('address'),
-                city=data.get('city'),
-                state=data.get('state'),
-                country=data.get('country', 'India'),
-                decision_maker=decision_maker,
-                telecalling_response=telecalling_response,
-                followup_date=data.get('followup_date'),
-                followup_time=data.get('followup_time'),
-                communication_channel=data.get('communication_channel'),
-                promotional_messages=data.get('promotional_messages'),
-                remarks=data.get('remarks'),
-                created_by=request.user,
-            )
-
-            messages.success(request, 'Hospital lead submitted successfully!')
-            return redirect('new_lead')
-
-        except Exception as e:
-            messages.error(request, f'Error submitting form: {str(e)}')
-            return redirect('new_lead')
-
-    return render(request, 'new_lead.html')
-
-
-
-
 def new_lead(request):
-    # ✅ Get categories grouped by ID
-    category_ids = Category.objects.values_list('id', flat=True).distinct()
-    categories = {}
-    for id in category_ids:
-        categories[id] = Category.objects.filter(id=id)
-
-    # ✅ Get all products
-    products = Product.objects.all()
-
     if request.method == 'POST':
         try:
-            data = request.POST
-
-            # ✅ Handle multiple selected products
-            products_data = []
-            for key, value in data.items():
-                if key.startswith('products[') and key.endswith('][id]'):
-                    index = key.split('[')[1].split(']')[0]
-                    product_id = value
-                    product_name = data.get(f'products[{index}][name]', '')
-                    if product_id and product_name:
-                        products_data.append({
-                            'id': product_id,
-                            'name': product_name
-                        })
-            print("Received products:", products_data)  # Optional: remove in production
-
-            # ✅ Handle checkboxes
-            decision_maker = data.getlist('decision_maker')
-            telecalling_response = data.getlist('telecalling_response')
-
-            # ✅ Create lead
-            lead = HospitalLead.objects.create(
-                hospital_name=data.get('hospital_name', '').strip(),
-                hospital_type=data.get('hospital_type', '').strip(),
-                first_name=data.get('first_name', '').strip(),
-                last_name=data.get('last_name', '').strip(),
-                phone=data.get('phone', '').strip(),
-                email=data.get('email', '').strip(),
-                address=data.get('address', '').strip(),
-                city=data.get('city', '').strip(),
-                state=data.get('state', '').strip(),
-                country=data.get('country', 'India').strip(),
-                decision_maker=decision_maker,
-                telecalling_response=telecalling_response,
-                followup_date=data.get('followup_date'),
-                followup_time=data.get('followup_time'),
-                communication_channel=data.get('communication_channel'),
-                promotional_messages=data.get('promotional_messages'),
-                remarks=data.get('remarks'),
-                created_by=request.user,
-            )
-
-            # ✅ Success message
-            messages.success(request, 'Hospital lead submitted successfully!')
-            return redirect('new_lead')
-
+            # Create HospitalLead instance
+            lead = HospitalLead()
+            
+            # Basic hospital information
+            lead.hospital_name = request.POST.get('hospital_name')
+            hospital_type = request.POST.get('hospital_type')
+            if hospital_type == 'Other':
+                lead.hospital_type = request.POST.get('hospital_type_other', 'Other')
+            else:
+                lead.hospital_type = hospital_type
+            
+            # Contact information
+            lead.first_name = request.POST.get('first_name')
+            lead.last_name = request.POST.get('last_name')
+            lead.phone = request.POST.get('phone')
+            lead.email = request.POST.get('email')
+            lead.address = request.POST.get('address')
+            lead.city = request.POST.get('city')
+            lead.state = request.POST.get('state')
+            lead.country = request.POST.get('country', 'India')
+            
+            # Decision maker information (handle multiple selections)
+            decision_makers = request.POST.getlist('decision_maker')
+            if 'Other' in decision_makers:
+                other_decision = request.POST.get('decision_maker_other')
+                if other_decision:
+                    decision_makers.remove('Other')
+                    decision_makers.append(other_decision)
+            lead.decision_maker = decision_makers
+            
+            # Telecalling response (handle multiple selections)
+            telecalling_responses = request.POST.getlist('telecalling_response')
+            if 'Other' in telecalling_responses:
+                other_response = request.POST.get('telecalling_response_other')
+                if other_response:
+                    telecalling_responses.remove('Other')
+                    telecalling_responses.append(other_response)
+            lead.telecalling_response = telecalling_responses
+            
+            # Follow-up information
+            followup_date = request.POST.get('followup_date')
+            followup_time = request.POST.get('followup_time')
+            lead.followup_date = followup_date if followup_date else None
+            lead.followup_time = followup_time if followup_time else None
+            
+            # Communication preferences
+            lead.communication_channel = request.POST.get('communication_channel')
+            lead.promotional_messages = request.POST.get('promotional_messages')
+            lead.remarks = request.POST.get('remarks')
+            
+            # Set created_by to current user
+            lead.created_by = request.user
+            
+            # Save the lead first
+            lead.save()
+            
+            # Handle products
+            product_data = {}
+            for key, value in request.POST.items():
+                if key.startswith('products[') and value:
+                    # Extract index and field from key like 'products[0][id]'
+                    import re
+                    match = re.match(r'products\[(\d+)\]\[(\w+)\]', key)
+                    if match:
+                        index, field = match.groups()
+                        if index not in product_data:
+                            product_data[index] = {}
+                        product_data[index][field] = value
+            
+            # Save selected products
+            for product_info in product_data.values():
+                product_id = product_info.get('id')
+                if product_id:
+                    try:
+                        product = Product.objects.get(id=product_id)
+                        HospitalLeadProducts.objects.get_or_create(
+                            hospital_lead=lead,
+                            product=product
+                        )
+                    except Product.DoesNotExist:
+                        messages.warning(request, f'Product with ID {product_id} not found')
+            
+            # Handle parts
+            parts_data = {}
+            for key, value in request.POST.items():
+                if key.startswith('parts[') and value:
+                    # Extract index and field from key like 'parts[0][id]'
+                    import re
+                    match = re.match(r'parts\[(\d+)\]\[(\w+)\]', key)
+                    if match:
+                        index, field = match.groups()
+                        if index not in parts_data:
+                            parts_data[index] = {}
+                        parts_data[index][field] = value
+            
+            # Save selected parts
+            for parts_info in parts_data.values():
+                part_id = parts_info.get('id')
+                if part_id:
+                    try:
+                        part = Parts.objects.get(id=part_id)
+                        HospitalLeadParts.objects.get_or_create(
+                            hospital_lead=lead,
+                            part=part
+                        )
+                    except Parts.DoesNotExist:
+                        messages.warning(request, f'Part with ID {part_id} not found')
+            
+            messages.success(request, 'Hospital lead created successfully!')
+            return redirect('hospital_leads_list')  # Redirect to leads list page
+            
         except Exception as e:
-            messages.error(request, f'Error submitting form: {str(e)}')
-            return redirect('new_lead')
+            messages.error(request, f'Error creating lead: {str(e)}')
+            return render(request, 'new_lead.html', get_form_context())
+    
+    else:
+        return render(request, 'new_lead.html', get_form_context())
 
-    # ✅ Always pass categories and products for rendering
-    return render(request, 'new_lead.html', {
+def get_form_context():
+    """Helper function to get context data for the form"""
+    # Get categories grouped by ID
+    categories = {}
+    for category in Category.objects.all():
+        if category.id not in categories:
+            categories[category.id] = []
+        categories[category.id].append(category)
+    
+    context = {
         'categories': categories,
-        'products': products
+        'products': Product.objects.all(),
+        'parts': Parts.objects.all(),
+    }
+    return context
+
+
+@login_required
+def hospital_leads_list(request):
+    search_query = request.GET.get('q', '').strip()
+    
+    leads = HospitalLead.objects.all().prefetch_related(
+        'lead_parts__part',
+        'lead_products__product'
+    ).order_by('-created_at')
+    
+    if search_query:
+        leads = leads.filter(
+            Q(hospital_name__icontains=search_query) |
+            Q(first_name__icontains=search_query) |
+            Q(last_name__icontains=search_query) |
+            Q(phone__icontains=search_query) |
+            Q(email__icontains=search_query) |
+            Q(city__icontains=search_query) |
+            Q(state__icontains=search_query)
+        )
+
+    return render(request, 'hospital_leads_list.html', {
+        'leads': leads,
+        'search_query': search_query
     })
 
+@login_required
+def hospital_lead_detail(request, lead_id):
+    """View to display detailed information about a specific lead"""
+    lead = get_object_or_404(HospitalLead, id=lead_id)
+    lead_parts = HospitalLeadParts.objects.filter(hospital_lead=lead)
+    lead_products = HospitalLeadProducts.objects.filter(hospital_lead=lead)
+    
+    context = {
+        'lead': lead,
+        'lead_parts': lead_parts,
+        'lead_products': lead_products,
+    }
+    return render(request, 'hospital_lead_detail.html', context)
+def hospital_lead_edit(request, pk):
+    lead = get_object_or_404(HospitalLead, pk=pk)
 
+    if request.method == 'POST':
+        lead.hospital_name = request.POST.get("hospital_name")
+        lead.hospital_type = request.POST.get("hospital_type")
+        lead.hospital_type_other = request.POST.get("hospital_type_other", "")
+
+        lead.first_name = request.POST.get("first_name")
+        lead.last_name = request.POST.get("last_name")
+        lead.designation = request.POST.get("designation")
+        lead.phone = request.POST.get("phone")
+        lead.email = request.POST.get("email")
+        lead.address = request.POST.get("address")
+        lead.city = request.POST.get("city")
+        lead.state = request.POST.get("state")
+        lead.country = request.POST.get("country", "India")
+
+        lead.decision_maker = ",".join(request.POST.getlist("decision_maker"))
+        lead.telecalling_response = ",".join(request.POST.getlist("telecalling_response"))
+
+        lead.category_id = request.POST.get("category_id")
+        lead.category_name = request.POST.get("category_name")
+
+        lead.remarks = request.POST.get("remarks")
+
+        lead.save()
+        messages.success(request, "Hospital Lead updated successfully.")
+        return redirect(reverse("hospital_lead_list"))
+
+    # ✅ Preprocess decision makers for template
+
+    # Preprocess decision makers for template
+    if isinstance(lead.decision_maker, list):
+        dm_list = lead.decision_maker
+    else:
+        dm_list = lead.decision_maker.split(",") if lead.decision_maker else []
+
+
+
+
+    # Fetch dropdown data from DB if needed
+    categories = {}  # Fill categories same as in create view
+    products = []    # Fill product list
+    parts = []       # Fill parts list
+
+    # ✅ Options for decision makers (static or from DB)
+    decision_maker_options = [
+        "Dialysis Technician", "Nephrologist", "Purchase Department",
+        "Account Department", "Biomedical Department", "store", "owner", "Other"
+    ]
+
+    context = {
+        "lead": lead,
+        "dm_list": dm_list,
+        "decision_maker_options": decision_maker_options,
+        "categories": categories,
+        "products": products,
+        "parts": parts
+    }
+    return render(request, "hospital_lead_edit.html", context)
+
+
+
+# Delete View
+def delete_hospital_lead(request, pk):
+    lead = get_object_or_404(HospitalLead, pk=pk)
+
+    if request.method == "POST":
+        lead.delete()
+        messages.success(request, "Hospital Lead deleted successfully.")
+        return redirect(reverse("hospital_lead_list"))
+
+    return render(request, "delete_hospital_lead_confirm.html", {"lead": lead})
 
 def add_category(request):
     return render(request, 'add_categories.html')

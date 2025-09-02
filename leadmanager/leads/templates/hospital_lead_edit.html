@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+{% block title %}Edit Hospital/Clinic Lead{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header bg-warning text-white">
+            <h3 class="mb-0">Edit Hospital/Clinic Lead</h3>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+
+                <!-- 1. Hospital Information -->
+                <div class="mb-4">
+                    <h5 class="border-bottom pb-2">1. Hospital/Clinic Information</h5>
+                    <div class="mb-3">
+                        <label class="form-label">Hospital/Clinic Name*</label>
+                        <input type="text" class="form-control" name="hospital_name"
+                               value="{{ lead.hospital_name }}" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Type of Hospital Unit*</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="hospital_type"
+                                   value="Direct Hospital" {% if lead.hospital_type == "Direct Hospital" %}checked{% endif %}>
+                            <label class="form-check-label">Direct Hospital</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="hospital_type"
+                                   value="Distributed" {% if lead.hospital_type == "Distributed" %}checked{% endif %}>
+                            <label class="form-check-label">Distributed</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="hospital_type"
+                                   value="Other" {% if lead.hospital_type == "Other" %}checked{% endif %}>
+                            <label class="form-check-label">Other</label>
+                        </div>
+                        <div id="hospital_type_other_container" class="mt-2"
+                             {% if lead.hospital_type != "Other" %}style="display:none;"{% endif %}>
+                            <input type="text" class="form-control" name="hospital_type_other"
+                                   value="{{ lead.hospital_type_other|default:'' }}">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. Contact Person Info -->
+                <div class="mb-4">
+                    <h5 class="border-bottom pb-2">2. Contact Person Information</h5>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">First Name*</label>
+                            <input type="text" class="form-control" name="first_name"
+                                   value="{{ lead.first_name }}" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Last Name*</label>
+                            <input type="text" class="form-control" name="last_name"
+                                   value="{{ lead.last_name }}" required>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Designation</label>
+                        <input type="text" class="form-control" name="designation"
+                               value="{{ lead.designation }}">
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Phone Number*</label>
+                            <input type="tel" class="form-control" name="phone"
+                                   value="{{ lead.phone }}" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-control" name="email"
+                                   value="{{ lead.email }}">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Address</label>
+                        <input type="text" class="form-control" name="address"
+                               value="{{ lead.address }}">
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">City</label>
+                            <input type="text" class="form-control" name="city"
+                                   value="{{ lead.city }}">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">State</label>
+                            <input type="text" class="form-control" name="state"
+                                   value="{{ lead.state }}">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Country</label>
+                            <input type="text" class="form-control" name="country"
+                                   value="{{ lead.country }}">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. Decision Maker -->
+                <div class="mb-4">
+                    <h5 class="border-bottom pb-2">3. Decision Maker Information</h5>
+                    {% for option in decision_maker_options %}
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" name="decision_maker"
+                                value="{{ option }}" {% if option in dm_list %}checked{% endif %}>
+                            <label class="form-check-label">{{ option }}</label>
+                        </div>
+                    {% endfor %}
+                    <div id="decision_maker_other_containers" class="mt-2"
+                        {% if "Other" not in dm_list %}style="display:none;"{% endif %}>
+                        <input type="text" class="form-control" name="decision_maker_other"
+                            value="{{ lead.decision_maker_other|default:'' }}">
+                    </div>
+                </div>
+
+                <!-- Repeat your Telecalling Response / Category / Product / Parts sections here,
+                     adding value="{{ lead.field }}" or {% if selected %}selected{% endif %} where appropriate -->
+
+                <!-- Remarks -->
+                <div class="mb-4">
+                    <h5 class="border-bottom pb-2">Remarks</h5>
+                    <textarea class="form-control" name="remarks" rows="3">{{ lead.remarks }}</textarea>
+                </div>
+
+                <!-- Submit -->
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                    <a href="{% url 'hospital_leads_list' %}" class="btn btn-outline-secondary me-md-2">Cancel</a>
+                    <button type="submit" class="btn btn-primary">Update Lead</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

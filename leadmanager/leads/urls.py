@@ -4,6 +4,12 @@ from . import views
 urlpatterns = [
     path('dashboard/', views.dashboard, name='dashboard'),
     path('new-lead/', views.new_lead, name='new_lead'),
+    path('hospital-leads/', views.hospital_leads_list, name='hospital_leads_list'),
+    path('hospital-leads/<str:lead_id>/', views.hospital_lead_detail, name='hospital_lead_detail'),
+    
+
+    path('hospital-leads/edit/<int:pk>/', views.hospital_lead_edit, name='hospital_lead_edit'),
+    path('hospital-leads/delete/<int:pk>/', views.delete_hospital_lead, name='delete_hospital_lead'),
     path('login/', views.login_view, name='login'),
     path('logout/', views.logout_view, name='logout'),
      path('payment-followup/', views.payment_followup_form, name='payment_followup_form'),
@@ -91,5 +97,6 @@ urlpatterns = [
     
     # # Reports
     # path('expenses/reports/', views.expense_reports, name='expense_reports'),
+    
 
 ]
